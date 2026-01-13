@@ -738,10 +738,9 @@
                             </div>
                             <!-- Input Field - ปรับ padding สำหรับ mobile -->
                             <input 
-                                type="number" 
+                                type="text" 
                                 id="grossSalary" 
                                 placeholder="0.00" 
-                                step="0.01"
                                 inputmode="decimal"
                                 class="mobile-input input-field w-full pl-3 sm:pl-14 pr-20 sm:pr-20 py-3 sm:py-4 bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 rounded-xl text-lg sm:text-xl font-bold text-gray-900 placeholder-gray-400 focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 focus:bg-white focus:shadow-lg focus:shadow-primary-500/10 transition-all duration-200"
                             >
@@ -1508,7 +1507,51 @@ lo: {
                 
                 const grossSalaryInput = document.getElementById('grossSalary');
                 if (grossSalaryInput) {
-                    grossSalaryInput.addEventListener('input', updateQuickDisplays);
+                    // Format ตัวเลขให้มี comma เมื่อพิมพ์
+                    grossSalaryInput.addEventListener('input', function(e) {
+                        const cursorPosition = e.target.selectionStart;
+                        const oldValue = e.target.value;
+                        
+                        // นับจำนวนตัวเลขก่อน cursor (ไม่นับ comma)
+                        const digitsBeforeCursor = oldValue.substring(0, cursorPosition).replace(/[^\d]/g, '').length;
+                        
+                        // Format ค่าใหม่
+                        const newValue = formatNumberWithCommas(oldValue);
+                        
+                        // หาตำแหน่ง cursor ใหม่โดยนับตัวเลข
+                        let newCursorPosition = 0;
+                        let digitCount = 0;
+                        for (let i = 0; i < newValue.length; i++) {
+                            if (/\d/.test(newValue[i])) {
+                                digitCount++;
+                                if (digitCount === digitsBeforeCursor) {
+                                    newCursorPosition = i + 1;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        // ถ้าไม่เจอตำแหน่ง ให้ตั้งที่ท้ายสุด
+                        if (newCursorPosition === 0 && digitsBeforeCursor > 0) {
+                            newCursorPosition = newValue.length;
+                        }
+                        
+                        e.target.value = newValue;
+                        
+                        // ตั้งค่า cursor position ใหม่
+                        e.target.setSelectionRange(newCursorPosition, newCursorPosition);
+                        
+                        // อัปเดต quick displays
+                        updateQuickDisplays();
+                    });
+                    
+                    // Format เมื่อ blur (เมื่อออกจาก input)
+                    grossSalaryInput.addEventListener('blur', function(e) {
+                        const value = parseFormattedNumber(e.target.value);
+                        if (value > 0) {
+                            e.target.value = formatNumberWithCommas(value.toFixed(2));
+                        }
+                    });
                 }
                 
                 // อัปเดต allowance currency เมื่อเปลี่ยน exchange rate
@@ -1573,8 +1616,9 @@ lo: {
             
             if (!quickSalaryDisplay) return; // ถ้าไม่มี element ให้ออกจาก function
             
-            if (salaryInput && parseFloat(salaryInput) > 0) {
-                const value = parseFloat(salaryInput).toLocaleString();
+            const salaryValue = parseFormattedNumber(salaryInput);
+            if (salaryValue > 0) {
+                const value = salaryValue.toLocaleString();
                 quickSalaryDisplay.textContent = currencyType === 'USD' ? '$' + value + ' USD' : value + ' ' + getCurrencyDisplay(currencyType);
             } else {
                 quickSalaryDisplay.textContent = '$0';
@@ -1800,6 +1844,41 @@ lo: {
             return new Intl.NumberFormat('en-US').format(Math.round(num));
         }
         
+        // Format number with commas for input field (รองรับทศนิยม)
+        function formatNumberWithCommas(value) {
+            if (!value && value !== 0) return '';
+            
+            // ถ้าเป็นตัวเลข ให้แปลงเป็น string ก่อน
+            if (typeof value === 'number') {
+                value = value.toString();
+            }
+            
+            // ลบทุกอย่างที่ไม่ใช่ตัวเลขและจุดทศนิยม
+            const numericValue = value.toString().replace(/[^\d.]/g, '');
+            
+            // ถ้าไม่มีค่า ให้ return empty string
+            if (!numericValue) return '';
+            
+            // แยกส่วนจำนวนเต็มและทศนิยม
+            const parts = numericValue.split('.');
+            let integerPart = parts[0] || '';
+            const decimalPart = parts[1] !== undefined ? '.' + parts[1].slice(0, 2) : ''; // จำกัดทศนิยม 2 ตำแหน่ง
+            
+            // เพิ่ม comma ทุก 3 หลัก
+            integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            
+            return integerPart + decimalPart;
+        }
+        
+        // Parse number from formatted string (ลบ comma ออก)
+        function parseFormattedNumber(value) {
+            if (!value) return 0;
+            // ลบ comma และ space ออก แล้วแปลงเป็นตัวเลข
+            const numericString = value.toString().replace(/[, ]/g, '');
+            const parsed = parseFloat(numericString);
+            return isNaN(parsed) ? 0 : parsed;
+        }
+        
         // ฟังก์ชันสำหรับแสดงสกุลเงิน - ใช้ ກີບ แทน LAK สำหรับลาว
         function getCurrencyDisplay(currencyType) {
             // ถ้าไม่ระบุ currencyType ให้ตรวจสอบจาก selector (default เป็น LAK)
@@ -1885,7 +1964,7 @@ lo: {
         // Main calculation function
         function calculateSalary() {
             try {
-                const salaryInput = parseFloat(document.getElementById('grossSalary').value);
+                const salaryInput = parseFormattedNumber(document.getElementById('grossSalary').value);
                 const currencyType = document.getElementById('currencySelector').value;
                 const exchangeRate = parseFloat(document.getElementById('exchangeRate').value);
                 const salaryType = document.getElementById('salaryType').value;
@@ -2340,7 +2419,11 @@ lo: {
             const calc = savedCalculations[index];
             
             document.getElementById('currencySelector').value = calc.inputCurrency;
-            document.getElementById('grossSalary').value = calc.inputAmount;
+            // Format ตัวเลขให้มี comma เมื่อโหลดค่าที่บันทึกไว้
+            const grossSalaryInput = document.getElementById('grossSalary');
+            if (grossSalaryInput) {
+                grossSalaryInput.value = formatNumberWithCommas(calc.inputAmount.toString());
+            }
             document.getElementById('exchangeRate').value = calc.exchangeRate;
             document.getElementById('salaryType').value = calc.salaryType;
             
