@@ -75,7 +75,8 @@
                         },
                     },
                 }
-            };
+            }
+        }
         } else {
             console.warn('Tailwind CSS not loaded, config will be set when available');
             // Retry setting config after a delay
@@ -200,6 +201,35 @@
             touch-action: pan-y;
         }
         
+        /* ปรับปรุงฟอนต์ภาษาอังกฤษให้สวยงาม - ใช้เมื่อเลือกภาษาอังกฤษ */
+        body:not(.lang-lao) {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            letter-spacing: -0.01em;
+        }
+        
+        /* ปรับปรุง typography สำหรับข้อความภาษาอังกฤษ */
+        body:not(.lang-lao) h1,
+        body:not(.lang-lao) h2,
+        body:not(.lang-lao) h3,
+        body:not(.lang-lao) h4,
+        body:not(.lang-lao) h5,
+        body:not(.lang-lao) h6 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+        
+        body:not(.lang-lao) p,
+        body:not(.lang-lao) span,
+        body:not(.lang-lao) div,
+        body:not(.lang-lao) label {
+            letter-spacing: -0.005em;
+            line-height: 1.5;
+        }
+        
         /* ใช้ฟอนต์ Noto Sans Lao สำหรับภาษาลาว - ครอบคลุมทุกองค์ประกอบ */
         body.lang-lao,
         body.lang-lao *,
@@ -234,8 +264,31 @@
             font-family: 'Noto Sans Lao', 'Inter', system-ui, -apple-system, sans-serif !important;
         }
         
-        /* ใช้ Noto Sans Lao สำหรับข้อความ ກີບ เสมอ (ไม่ว่าจะเป็นภาษาไหน) */
+        /* ใช้ Noto Sans Lao สำหรับข้อความภาษาลาว (ກີບ) เสมอ - แม้เลือกภาษาอังกฤษ */
         .lao-currency-text {
+            font-family: 'Noto Sans Lao', 'Inter', system-ui, -apple-system, sans-serif !important;
+        }
+        
+        /* ใช้ Noto Sans Lao สำหรับทุก element ที่แสดงสกุลเงิน ກີບ - แม้เลือกภาษาอังกฤษ */
+        /* ครอบคลุมทุก element ที่อาจมีข้อความ ກີບ โดยใช้ ID และ class ที่เกี่ยวข้อง */
+        body:not(.lang-lao) #baseSalaryCurrency,
+        body:not(.lang-lao) #overtimeCurrency,
+        body:not(.lang-lao) #otherAllowancesCurrency,
+        body:not(.lang-lao) #salaryCurrencyBadge,
+        body:not(.lang-lao) .currency-badge.lak,
+        body:not(.lang-lao) .currency-badge.lak span,
+        body:not(.lang-lao) option[value="LAK"],
+        /* ครอบคลุม display elements ที่แสดงผลพร้อม ກີບ */
+        body:not(.lang-lao) #netSalaryDisplay,
+        body:not(.lang-lao) #netSalaryHighlight,
+        body:not(.lang-lao) #totalGrossDisplay,
+        body:not(.lang-lao) #totalDeductionsDisplay,
+        body:not(.lang-lao) #breakdownAllowancesDisplay,
+        body:not(.lang-lao) #grossSalaryDisplay,
+        body:not(.lang-lao) #lssoAmountDisplay,
+        body:not(.lang-lao) #taxableIncomeDisplay,
+        body:not(.lang-lao) #pitAmountDisplay,
+        body:not(.lang-lao) #totalAllowancesDisplay {
             font-family: 'Noto Sans Lao', 'Inter', system-ui, -apple-system, sans-serif !important;
         }
         
@@ -1744,6 +1797,9 @@ lo: {
                 updateLanguage();
                 updateTotalAllowances();
                 
+                // ตรวจสอบและเพิ่ม class ให้กับ element ที่มีข้อความภาษาลาว - เพื่อให้ใช้ Noto Sans Lao เสมอ
+                setTimeout(ensureLaoTextFont, 150);
+                
                 // ซ่อน loading indicator หลังจาก initialization เสร็จ
                 // ใช้ setTimeout เพื่อให้แน่ใจว่า DOM พร้อมแล้ว
                 setTimeout(hideLoader, 100);
@@ -1890,6 +1946,49 @@ lo: {
             safeVibrate(10);
         }
 
+        // ฟังก์ชันสำหรับเพิ่ม class ให้กับ element ที่มีข้อความภาษาลาว - เพื่อให้ใช้ Noto Sans Lao เสมอ
+        function ensureLaoTextFont() {
+            // หา element ทั้งหมดที่มีข้อความ ກີບ หรือข้อความภาษาลาว
+            const allElements = document.querySelectorAll('*');
+            allElements.forEach(el => {
+                // ข้าม element ที่ไม่มี text content
+                if (!el.textContent) return;
+                
+                // ตรวจสอบว่ามีข้อความภาษาลาว (ກີບ หรือตัวอักษรลาวอื่นๆ)
+                const hasLaoText = /[\u0E80-\u0EFF]/.test(el.textContent);
+                
+                if (hasLaoText) {
+                    // เพิ่ม class lao-currency-text หรือ class อื่นที่กำหนดให้ใช้ Noto Sans Lao
+                    el.classList.add('lao-currency-text');
+                }
+            });
+            
+            // เพิ่ม class ให้กับ element ที่แสดงสกุลเงิน ກີບ โดยเฉพาะ
+            const currencyElements = [
+                'baseSalaryCurrency',
+                'overtimeCurrency',
+                'otherAllowancesCurrency',
+                'salaryCurrencyBadge',
+                'netSalaryDisplay',
+                'netSalaryHighlight',
+                'totalGrossDisplay',
+                'totalDeductionsDisplay',
+                'breakdownAllowancesDisplay',
+                'grossSalaryDisplay',
+                'lssoAmountDisplay',
+                'taxableIncomeDisplay',
+                'pitAmountDisplay',
+                'totalAllowancesDisplay'
+            ];
+            
+            currencyElements.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.classList.add('lao-currency-text');
+                }
+            });
+        }
+        
         // Update all translations
         function updateLanguage() {
             const t = translations[currentLanguage];
@@ -1922,6 +2021,10 @@ lo: {
             toggleCurrencyInput();
             updateAllowanceCurrencyDisplay(); // อัปเดตการแสดงผลสกุลเงินของ allowance เมื่อเปลี่ยนภาษา
             updateQuickDisplays();
+            
+            // ตรวจสอบและเพิ่ม class ให้กับ element ที่มีข้อความภาษาลาว - เพื่อให้ใช้ Noto Sans Lao เสมอ
+            // ใช้ setTimeout เพื่อให้ DOM อัปเดตเสร็จก่อน
+            setTimeout(ensureLaoTextFont, 50);
         }
 
         // Update quick displays
@@ -2461,6 +2564,9 @@ lo: {
             safeSetText('pitAmountDisplay', '-' + formatCurrency(data.pitAmount, 'LAK'));
             safeSetText('netSalaryDisplay', formatCurrency(data.netLAK, 'LAK'));
             safeSetText('netSalaryUSDDisplay', '$' + data.netUSD.toFixed(2) + ' USD');
+            
+            // ตรวจสอบและเพิ่ม class ให้กับ element ที่มีข้อความภาษาลาว - เพื่อให้ใช้ Noto Sans Lao เสมอ
+            setTimeout(ensureLaoTextFont, 50);
             
             // Tax brackets - ตรวจสอบว่ามี element หรือไม่
             const taxBracketDetails = document.getElementById('taxBracketDetails');
