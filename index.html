@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0ea5e9">
+    <meta name="theme-color" content="#4caf50">
     <meta name="description" content="Lao PDR Salary Tax Calculator - Calculate LSSO, PIT, and Net Salary">
     <title>Lao PDR Salary Tax Calculator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -21,16 +21,16 @@
                     },
                     colors: {
                         primary: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            200: '#bae6fd',
-                            300: '#7dd3fc',
-                            400: '#38bdf8',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                            800: '#075985',
-                            900: '#0c4a6e',
+                            50: '#e8f5e9',
+                            100: '#c8e6c9',
+                            200: '#a5d6a7',
+                            300: '#81c784',
+                            400: '#66bb6a',
+                            500: '#4caf50',
+                            600: '#43a047',
+                            700: '#388e3c',
+                            800: '#2e7d32',
+                            900: '#1b5e20',
                         }
                     },
                     animation: {
@@ -110,6 +110,11 @@
         body.lang-lao .currency-badge,
         body.lang-lao .result-card,
         body.lang-lao .section-card {
+            font-family: 'Noto Sans Lao', 'Inter', system-ui, -apple-system, sans-serif !important;
+        }
+        
+        /* ใช้ Noto Sans Lao สำหรับข้อความ ກີບ เสมอ (ไม่ว่าจะเป็นภาษาไหน) */
+        .lao-currency-text {
             font-family: 'Noto Sans Lao', 'Inter', system-ui, -apple-system, sans-serif !important;
         }
         
@@ -194,15 +199,124 @@
         }
         
         .toggle-option.active {
-            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            background: linear-gradient(135deg, #4caf50 0%, #43a047 100%);
             color: white;
             border-color: transparent;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
         }
         
         .toggle-option.inactive {
             background: #f1f5f9;
             color: #64748b;
             border-color: #e2e8f0;
+            transition: all 0.2s ease;
+        }
+        
+        .toggle-option.inactive:hover {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+        }
+        
+        .toggle-option.active:hover {
+            background: linear-gradient(135deg, #43a047 0%, #388e3c 100%);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+        
+        /* Beautiful Toggle Switch Styles */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        
+        /* Material Design Toggle Switch - สวยงามและทันสมัย */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 3.5rem;
+            height: 1.375rem;
+            background-color: rgba(0, 0, 0, 0.38);
+            border-radius: 0.875rem;
+            transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Toggle slider (the moving circle) - Material Design style */
+        .toggle-slider {
+            position: absolute;
+            top: 0.125rem;
+            left: 0.125rem;
+            width: 1.125rem;
+            height: 1.125rem;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1);
+            transform: translateX(0);
+        }
+        
+        /* When checkbox is checked - Material Design green */
+        input:checked ~ .toggle-switch {
+            background-color: #4caf50;
+        }
+        
+        input:checked ~ .toggle-switch .toggle-slider {
+            transform: translateX(2.125rem);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Hover effect - Material Design ripple */
+        label.cursor-pointer:hover .toggle-switch {
+            background-color: rgba(0, 0, 0, 0.54);
+        }
+        
+        label.cursor-pointer:hover input:checked ~ .toggle-switch {
+            background-color: #43a047;
+        }
+        
+        /* Focus ring - Material Design */
+        input:focus ~ .toggle-switch {
+            outline: 2px solid transparent;
+            outline-offset: 4px;
+        }
+        
+        input:focus ~ .toggle-switch::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border-radius: 1rem;
+            background-color: rgba(76, 175, 80, 0.12);
+            pointer-events: none;
+        }
+        
+        input:focus:checked ~ .toggle-switch::before {
+            background-color: rgba(76, 175, 80, 0.24);
+        }
+        
+        /* Active state animation - Material Design press effect */
+        input:active ~ .toggle-switch .toggle-slider {
+            transform: scale(0.9);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        input:checked:active ~ .toggle-switch .toggle-slider {
+            transform: translateX(2.125rem) scale(0.9);
+        }
+        
+        /* Disabled state */
+        input:disabled ~ .toggle-switch {
+            opacity: 0.38;
+            cursor: not-allowed;
         }
         
         .currency-badge {
@@ -210,16 +324,50 @@
             padding: 0.2rem 0.5rem;
             border-radius: 9999px;
             font-weight: 600;
+            transition: all 0.2s ease;
         }
         
         .currency-badge.usd {
-            background: #dbeafe;
-            color: #1d4ed8;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+            box-shadow: 0 1px 2px rgba(30, 64, 175, 0.1);
         }
         
         .currency-badge.lak {
-            background: #fef3c7;
-            color: #d97706;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #b45309;
+            border: 1px solid #fcd34d;
+            box-shadow: 0 1px 2px rgba(180, 83, 9, 0.1);
+        }
+        
+        /* Enhanced input focus effects */
+        .input-field:focus {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);
+        }
+        
+        /* Select dropdown styling - ใช้ SVG ที่มีใน HTML แทน */
+        select.input-field {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+        
+        /* Smooth transitions for all interactive elements */
+        .input-field,
+        select.input-field {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Input group hover effect */
+        .group:hover label svg {
+            color: #0ea5e9;
+            transform: scale(1.1);
+        }
+        
+        .group label svg {
+            transition: all 0.2s ease;
         }
         
         /* Mobile Responsive Styles */
@@ -490,122 +638,147 @@
     <!-- Main Content -->
     <main class="pb-24">
         <div class="px-4 py-4 space-y-4 max-w-lg mx-auto">
-            <!-- Info Card -->
-            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4">
-                <div class="flex items-start space-x-3">
-                    <svg class="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <div>
-                        <p class="text-sm font-semibold text-amber-800" data-i18n="noteTitle">Note:</p>
-                        <p class="text-xs text-amber-700 mt-0.5" data-i18n="noteText">Using 2025 tax rules. Verify USD-LAK rate.</p>
+
+            <!-- Main Input Section - Redesigned -->
+            <div class="bg-white rounded-2xl border border-gray-200/60 shadow-lg shadow-gray-100/50 overflow-hidden backdrop-blur-sm">
+                <!-- Header with Icon -->
+                <div class="px-5 py-4 bg-gradient-to-r from-primary-50 via-white to-primary-50 border-b border-gray-100">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-sm shadow-primary-500/20">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-base font-bold text-gray-900" data-i18n="mainInputSection">Main Information</h2>
+                            <p class="text-xs text-gray-500 mt-0.5" data-i18n="mainInputSubtitle">Enter your salary details</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Quick Stats Cards -->
-            <div class="grid grid-cols-2 gap-3">
-                <div class="section-card bg-white rounded-2xl p-4 border border-gray-200 shadow-sm cursor-pointer" onclick="focusSalaryInput()">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-11 h-11 bg-primary-100 rounded-xl flex items-center justify-center">
-                            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                
+                <div class="p-5 space-y-5">
+                    <!-- Currency & Salary Type - Enhanced Grid -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Currency Selector -->
+                        <div class="group">
+                            <label class="flex items-center space-x-1.5 mb-2.5">
+                                <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span class="text-xs font-semibold text-gray-700" data-i18n="labelCurrency">Currency</span>
+                            </label>
+                            <div class="relative">
+                                <select 
+                                    id="currencySelector" 
+                                    onchange="toggleCurrencyInput()"
+                                    class="input-field w-full pl-10 pr-4 py-3 bg-gray-50/80 border-2 border-gray-200 rounded-xl text-sm font-semibold text-gray-900 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 focus:bg-white transition-all duration-200 appearance-none cursor-pointer hover:border-primary-300"
+                                >
+                                    <option value="USD">🇺🇸 USD</option>
+                                    <option value="LAK" selected>🇱🇦 ກີບ</option>
+                                </select>
+                                <div class="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                                    </svg>
+                                </div>
+                                <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Salary Type -->
+                        <div class="group">
+                            <label class="flex items-center space-x-1.5 mb-2.5">
+                                <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <span class="text-xs font-semibold text-gray-700" data-i18n="labelSalaryType">Salary Type</span>
+                            </label>
+                            <div class="relative">
+                                <select 
+                                    id="salaryType"
+                                    class="input-field w-full pl-10 pr-4 py-3 bg-gray-50/80 border-2 border-gray-200 rounded-xl text-sm font-semibold text-gray-900 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 focus:bg-white transition-all duration-200 appearance-none cursor-pointer hover:border-primary-300"
+                                >
+                                    <option value="monthly" data-i18n="monthly">Monthly</option>
+                                    <option value="annual" data-i18n="annual">Annual</option>
+                                </select>
+                                <div class="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                </div>
+                                <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Base Salary - Featured Input -->
+                    <div class="relative">
+                        <label class="flex items-center space-x-1.5 mb-2.5" id="salaryLabel">
+                            <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-xs text-gray-500" data-i18n="quickEnterSalary">Enter Salary</p>
-                            <p class="text-base font-bold text-gray-900 number-display truncate" id="quickSalaryDisplay">$0</p>
-                        </div>
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </div>
-                </div>
-                
-                <div class="section-card bg-white rounded-2xl p-4 border border-gray-200 shadow-sm cursor-pointer" onclick="scrollToResults()">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-11 h-11 bg-green-100 rounded-xl flex items-center justify-center">
-                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-xs text-gray-500" data-i18n="quickNetSalary">Net Salary</p>
-                            <p class="text-base font-bold text-green-600 number-display truncate" id="quickNetDisplay">0 ກີບ</p>
-                        </div>
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Main Input Section -->
-            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                <!-- Header -->
-                <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
-                    <h2 class="text-sm font-semibold text-gray-800" data-i18n="mainInputSection">Main Information</h2>
-                </div>
-                
-                <!-- Currency & Salary Type -->
-                <div class="px-4 py-3 border-b border-gray-100">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-2" data-i18n="labelCurrency">Currency</label>
-                            <select 
-                                id="currencySelector" 
-                                onchange="toggleCurrencyInput()"
-                                class="input-field w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            <span class="text-xs font-semibold text-gray-700" data-i18n="salaryLabel">Base Salary</span>
+                        </label>
+                        <div class="relative group">
+                            <!-- Left Icon - ซ่อนบน mobile เพื่อไม่ให้ทับ text -->
+                            <div class="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 pointer-events-none z-10 hidden sm:flex">
+                                <div class="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-primary-100 to-primary-200 rounded-lg flex items-center justify-center">
+                                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <!-- Input Field - ปรับ padding สำหรับ mobile -->
+                            <input 
+                                type="number" 
+                                id="grossSalary" 
+                                placeholder="0.00" 
+                                step="0.01"
+                                inputmode="decimal"
+                                class="mobile-input input-field w-full pl-3 sm:pl-14 pr-20 sm:pr-20 py-3 sm:py-4 bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 rounded-xl text-lg sm:text-xl font-bold text-gray-900 placeholder-gray-400 focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 focus:bg-white focus:shadow-lg focus:shadow-primary-500/10 transition-all duration-200"
                             >
-                                <option value="USD">🇺🇸 USD</option>
-                                <option value="LAK">🇱🇦 ກີບ</option>
-                            </select>
+                            <!-- Currency Badge -->
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2">
+                                <span id="salaryCurrencyBadge" class="currency-badge lak inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm">
+                                    <span>ກີບ</span>
+                                </span>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-2" data-i18n="labelSalaryType">Salary Type</label>
-                            <select 
-                                id="salaryType"
-                                class="input-field w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        <p class="text-xs text-gray-500 mt-2 ml-1" data-i18n="salaryHelpText">Enter your gross salary amount</p>
+                    </div>
+                    
+                    <!-- Exchange Rate - Compact Design -->
+                    <div class="bg-gradient-to-br from-amber-50/50 to-orange-50/30 rounded-xl p-4 border border-amber-100">
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="flex items-center space-x-2">
+                                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                </svg>
+                                <span class="text-xs font-semibold text-gray-700" data-i18n="labelExchange">Exchange Rate</span>
+                            </label>
+                            <span class="text-xs text-gray-500 font-medium">1 USD =</span>
+                        </div>
+                        <div class="relative">
+                            <input 
+                                type="number" 
+                                id="exchangeRate" 
+                                value="21630" 
+                                placeholder="21630" 
+                                step="0.01"
+                                inputmode="decimal"
+                                class="mobile-input input-field w-full pl-4 pr-12 py-3 bg-white border-2 border-amber-200 rounded-xl text-base font-semibold text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 focus:shadow-md transition-all duration-200"
                             >
-                                <option value="monthly" data-i18n="monthly">Monthly</option>
-                                <option value="annual" data-i18n="annual">Annual</option>
-                            </select>
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-amber-600 lao-currency-text">ກີບ</span>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Base Salary -->
-                <div class="px-4 py-3 border-b border-gray-100">
-                    <label class="block text-xs font-semibold text-gray-600 mb-2" id="salaryLabel" data-i18n="salaryLabel">Base Salary</label>
-                    <div class="relative">
-                        <input 
-                            type="number" 
-                            id="grossSalary" 
-                            placeholder="0" 
-                            step="0.01"
-                            inputmode="decimal"
-                            class="mobile-input input-field w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-lg font-bold text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                        >
-                        <span class="absolute right-3 top-1/2 -translate-y-1/2">
-                            <span id="salaryCurrencyBadge" class="currency-badge usd">USD</span>
-                        </span>
-                    </div>
-                </div>
-                
-                <!-- Exchange Rate -->
-                <div class="px-4 py-3">
-                    <label class="block text-xs font-semibold text-gray-600 mb-2" data-i18n="labelExchange">Exchange Rate (1 USD = ກີບ)</label>
-                    <div class="relative">
-                        <input 
-                            type="number" 
-                            id="exchangeRate" 
-                            value="21630" 
-                            placeholder="0" 
-                            step="0.01"
-                            inputmode="decimal"
-                            class="mobile-input input-field w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-base font-medium text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                        >
-                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">ກີບ</span>
+                        <p class="text-xs text-amber-600/70 mt-2 ml-1" data-i18n="exchangeRateHelp">Current market rate for USD to LAK</p>
                     </div>
                 </div>
             </div>
@@ -623,6 +796,34 @@
                 </div>
                 
                 <div class="p-4 space-y-3">
+                    <!-- Currency Option for Allowances - Beautiful Toggle Switch -->
+                    <div class="mb-4 pb-4 border-b border-gray-100">
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="flex-1 min-w-0">
+                                <label class="flex items-center space-x-2 mb-1.5">
+                                    <svg class="w-4 h-4 text-primary-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span class="text-xs font-semibold text-gray-700" data-i18n="allowanceCurrencyOption">Allowance Currency</span>
+                                </label>
+                                <p class="text-xs text-gray-500 mt-0.5" id="allowanceCurrencyDescription" data-i18n="sameAsSalary">Same as Salary</p>
+                            </div>
+                            <!-- Material Design Toggle Switch -->
+                            <label class="relative inline-flex items-center cursor-pointer group flex-shrink-0">
+                                <input 
+                                    type="checkbox" 
+                                    id="allowanceCurrencyToggle"
+                                    class="sr-only"
+                                    checked
+                                    onchange="toggleAllowanceCurrency(this.checked)"
+                                >
+                                <div class="toggle-switch">
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
                     <!-- Overtime (OT) -->
                     <div class="flex items-center justify-between py-2">
                         <div class="flex items-center space-x-3">
@@ -643,7 +844,7 @@
                                 inputmode="decimal"
                                 class="mobile-input w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-right text-sm font-medium focus:ring-2 focus:ring-primary-500"
                             >
-                            <span class="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-gray-400">ກີບ</span>
+                            <span id="overtimeCurrency" class="lao-currency-text absolute left-2 top-1/2 -translate-y-1/2 text-xs text-gray-400">ກີບ</span>
                         </div>
                     </div>
                     
@@ -667,7 +868,7 @@
                                 inputmode="decimal"
                                 class="mobile-input w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-right text-sm font-medium focus:ring-2 focus:ring-primary-500"
                             >
-                            <span class="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-gray-400">ກີບ</span>
+                            <span id="otherAllowancesCurrency" class="lao-currency-text absolute left-2 top-1/2 -translate-y-1/2 text-xs text-gray-400">ກີບ</span>
                         </div>
                     </div>
                     
@@ -689,12 +890,17 @@
                 <div class="p-4 space-y-4">
                     <!-- Social Security (LSSO) -->
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-2" data-i18n="labelSSO">Social Security (LSSO)</label>
+                        <label class="flex items-center space-x-2 mb-2.5">
+                            <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                            <span class="text-xs font-semibold text-gray-700" data-i18n="labelSSO">Social Security (LSSO)</span>
+                        </label>
                         <div class="grid grid-cols-2 gap-2">
                             <button 
                                 id="ssoYes"
                                 onclick="setSocialSecurity(true)"
-                                class="toggle-option active px-4 py-3 rounded-xl text-sm font-semibold text-center border-2"
+                                class="toggle-option active px-4 py-3 rounded-xl text-sm font-semibold text-center border-2 transition-all duration-200"
                                 data-i18n="yesOption"
                             >
                                 Yes (5.5%)
@@ -702,7 +908,7 @@
                             <button 
                                 id="ssoNo"
                                 onclick="setSocialSecurity(false)"
-                                class="toggle-option inactive px-4 py-3 rounded-xl text-sm font-semibold text-center border-2"
+                                class="toggle-option inactive px-4 py-3 rounded-xl text-sm font-semibold text-center border-2 transition-all duration-200"
                                 data-i18n="noOption"
                             >
                                 No (Exempt)
@@ -790,7 +996,7 @@
                                 </div>
                                 <div>
                                     <p class="text-xs font-semibold text-gray-900" data-i18n="baseSalary">Base Salary</p>
-                                    <p class="text-xs text-gray-500" id="baseSalaryCurrency">USD</p>
+                                    <p class="text-xs text-gray-500" id="baseSalaryCurrency">ກີບ</p>
                                 </div>
                             </div>
                             <p class="text-xs font-bold text-gray-900 number-display" id="baseSalaryDisplay">0</p>
@@ -1108,8 +1314,9 @@
     <script>
         // Global variables
         let calculationData = {};
-        let currentLanguage = 'en';
+        let currentLanguage = 'lo';
         let includeLSSO = true;
+        let allowanceSameCurrencyAsSalary = true; // ตัวแปรสำหรับเก็บสถานะว่า allowance ใช้สกุลเงินเดียวกับ salary หรือไม่
 
         // ตรวจสอบว่า script ถูกโหลดแล้ว
         console.log('Script loaded successfully');
@@ -1137,14 +1344,20 @@
                 totalDeductions: 'Deductions',
                 effectiveRate: 'Tax Rate',
                 mainInputSection: 'Main Information',
+                mainInputSubtitle: 'Enter your salary details',
                 labelCurrency: 'Currency',
                 salaryLabel: 'Base Salary',
                 salaryLabelLAK: 'Base Salary (LAK)',
+                salaryHelpText: 'Enter your gross salary amount',
                 labelExchange: 'Exchange Rate',
+                exchangeRateHelp: 'Current market rate for USD to LAK',
                 labelSalaryType: 'Salary Type',
                 monthly: 'Monthly',
                 annual: 'Annual',
                 allowancesSection: 'Allowances & Benefits',
+                allowanceCurrencyOption: 'Allowance Currency',
+                sameAsSalary: 'Same as Salary',
+                differentCurrency: 'LAK Only',
                 overtime: 'Overtime (OT)',
                 overtimeHelp: 'Extra hours payment',
                 otherAllowances: 'Other Allowances',
@@ -1205,14 +1418,20 @@ lo: {
                 totalDeductions: 'ລາຍການຫັກ',
                 effectiveRate: 'ອັດຕາອາກອນຕົວຈິງ',
                 mainInputSection: 'ຂໍ້ມູນຫຼັກ',
+                mainInputSubtitle: 'ປ້ອນລາຍລະອຽດເງິນເດືອນ',
                 labelCurrency: 'ສະກຸນເງິນ',
                 salaryLabel: 'ເງິນເດືອນພື້ນຖານ',
                 salaryLabelLAK: 'ເງິນເດືອນພື້ນຖານ (ກີບ)',
+                salaryHelpText: 'ປ້ອນຈຳນວນເງິນເດືອນລວມ',
                 labelExchange: 'ອັດຕາແລກປ່ຽນ',
+                exchangeRateHelp: 'ອັດຕາແລກປ່ຽນປັດຈຸບັນຂອງ USD ເປັນ ກີບ',
                 labelSalaryType: 'ປະເພດເງິນເດືອນ',
                 monthly: 'ລາຍເດືອນ',
                 annual: 'ລາຍປີ',
                 allowancesSection: 'ເງິນອຸດໜູນ ແລະ ສະຫວັດດີການ',
+                allowanceCurrencyOption: 'ສະກຸນເງິນຂອງເງິນອຸດໜູນ',
+                sameAsSalary: 'ຄືກັບເງິນເດືອນ',
+                differentCurrency: 'ກີບເທົ່ານັ້ນ',
                 overtime: 'ຄ່າລ່ວງເວລາ (OT)',
                 overtimeHelp: 'ຄ່າຈ້າງຊົ່ວໂມງພິເສດ',
                 otherAllowances: 'ເງິນອຸດໜູນອື່ນໆ',
@@ -1266,7 +1485,15 @@ lo: {
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             try {
+                // ตั้งค่า default currency เป็น LAK
+                const currencySelector = document.getElementById('currencySelector');
+                if (currencySelector) {
+                    currencySelector.value = 'LAK';
+                    toggleCurrencyInput(); // อัปเดต UI ให้ตรงกับ LAK
+                }
+                
                 setSocialSecurity(true);
+                initializeAllowanceCurrency(); // เริ่มต้นการตั้งค่า allowance currency
                 updateLanguage();
                 updateTotalAllowances();
                 
@@ -1282,6 +1509,12 @@ lo: {
                 const grossSalaryInput = document.getElementById('grossSalary');
                 if (grossSalaryInput) {
                     grossSalaryInput.addEventListener('input', updateQuickDisplays);
+                }
+                
+                // อัปเดต allowance currency เมื่อเปลี่ยน exchange rate
+                const exchangeRateInput = document.getElementById('exchangeRate');
+                if (exchangeRateInput) {
+                    exchangeRateInput.addEventListener('input', updateTotalAllowances);
                 }
             } catch (error) {
                 console.error('Error initializing page:', error);
@@ -1328,14 +1561,17 @@ lo: {
             }
             
             toggleCurrencyInput();
+            updateAllowanceCurrencyDisplay(); // อัปเดตการแสดงผลสกุลเงินของ allowance เมื่อเปลี่ยนภาษา
             updateQuickDisplays();
         }
 
         // Update quick displays
         function updateQuickDisplays() {
-            const salaryInput = document.getElementById('grossSalary').value;
-            const currencyType = document.getElementById('currencySelector').value;
+            const salaryInput = document.getElementById('grossSalary')?.value;
+            const currencyType = document.getElementById('currencySelector')?.value;
             const quickSalaryDisplay = document.getElementById('quickSalaryDisplay');
+            
+            if (!quickSalaryDisplay) return; // ถ้าไม่มี element ให้ออกจาก function
             
             if (salaryInput && parseFloat(salaryInput) > 0) {
                 const value = parseFloat(salaryInput).toLocaleString();
@@ -1354,20 +1590,43 @@ lo: {
             const currencyBadge = document.getElementById('salaryCurrencyBadge');
             const baseSalaryCurrency = document.getElementById('baseSalaryCurrency');
             
+            // อัปเดต badge text - รองรับโครงสร้างใหม่ที่มี nested span
+            const badgeSpan = currencyBadge ? currencyBadge.querySelector('span') : null;
+            const badgeTextElement = badgeSpan || currencyBadge;
+            
             if (currencySelector.value === 'LAK') {
-                salaryLabel.setAttribute('data-i18n', 'salaryLabelLAK');
-                salaryLabel.textContent = t.salaryLabelLAK;
-                currencyBadge.textContent = getCurrencyDisplay('LAK');
-                currencyBadge.className = 'currency-badge lak';
-                baseSalaryCurrency.textContent = getCurrencyDisplay('LAK');
+                if (salaryLabel) {
+                    salaryLabel.setAttribute('data-i18n', 'salaryLabelLAK');
+                    salaryLabel.textContent = t.salaryLabelLAK;
+                }
+                if (badgeTextElement) {
+                    badgeTextElement.textContent = getCurrencyDisplay('LAK');
+                }
+                if (currencyBadge) {
+                    currencyBadge.className = 'currency-badge lak inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm';
+                }
+                if (baseSalaryCurrency) {
+                    baseSalaryCurrency.textContent = getCurrencyDisplay('LAK');
+                }
             } else {
-                salaryLabel.setAttribute('data-i18n', 'salaryLabel');
-                salaryLabel.textContent = t.salaryLabel;
-                currencyBadge.textContent = 'USD';
-                currencyBadge.className = 'currency-badge usd';
-                baseSalaryCurrency.textContent = 'USD';
+                if (salaryLabel) {
+                    salaryLabel.setAttribute('data-i18n', 'salaryLabel');
+                    salaryLabel.textContent = t.salaryLabel;
+                }
+                if (badgeTextElement) {
+                    badgeTextElement.textContent = 'USD';
+                }
+                if (currencyBadge) {
+                    currencyBadge.className = 'currency-badge usd inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm';
+                }
+                if (baseSalaryCurrency) {
+                    baseSalaryCurrency.textContent = 'USD';
+                }
             }
             
+            // อัปเดตการแสดงผลสกุลเงินของ allowance เมื่อเปลี่ยนสกุลเงินของ salary
+            updateAllowanceCurrencyDisplay();
+            updateTotalAllowances();
             updateQuickDisplays();
         }
 
@@ -1395,14 +1654,145 @@ lo: {
             }
         }
 
-        // Update total allowances
+        // Toggle allowance currency option - ใช้กับ toggle switch ใหม่
+        function toggleAllowanceCurrency(checked) {
+            allowanceSameCurrencyAsSalary = checked;
+            
+            const toggle = document.getElementById('allowanceCurrencyToggle');
+            const description = document.getElementById('allowanceCurrencyDescription');
+            const t = translations[currentLanguage];
+            
+            // อัปเดต toggle state (ถ้ายังไม่ถูกอัปเดต)
+            if (toggle && toggle.checked !== checked) {
+                toggle.checked = checked;
+            }
+            
+            // อัปเดตข้อความอธิบาย
+            if (description) {
+                const newKey = checked ? 'sameAsSalary' : 'differentCurrency';
+                description.setAttribute('data-i18n', newKey);
+                description.textContent = t[newKey];
+                
+                // เพิ่ม animation effect
+                description.style.opacity = '0';
+                setTimeout(() => {
+                    description.style.transition = 'opacity 0.2s ease';
+                    description.style.opacity = '1';
+                }, 10);
+            }
+            
+            // อัปเดตการแสดงผลสกุลเงินของ allowance inputs
+            updateAllowanceCurrencyDisplay();
+            updateTotalAllowances();
+            
+            // เพิ่ม haptic feedback (ถ้ารองรับ)
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
+        }
+        
+        // Set allowance currency option - ฟังก์ชันสำหรับตั้งค่าว่า allowance ใช้สกุลเงินเดียวกับ salary หรือไม่ (รองรับทั้ง toggle switch และปุ่มเก่า)
+        function setAllowanceCurrencyOption(sameAsSalary) {
+            allowanceSameCurrencyAsSalary = sameAsSalary;
+            
+            // ตรวจสอบว่ามี toggle switch หรือไม่
+            const toggle = document.getElementById('allowanceCurrencyToggle');
+            if (toggle) {
+                // ใช้ toggle switch ใหม่
+                toggle.checked = sameAsSalary;
+                toggleAllowanceCurrency(sameAsSalary);
+            } else {
+                // Fallback สำหรับโครงสร้างเก่า (ถ้ายังมีปุ่ม)
+                const sameBtn = document.getElementById('allowanceCurrencySame');
+                const differentBtn = document.getElementById('allowanceCurrencyDifferent');
+                
+                if (sameBtn && differentBtn) {
+                    if (sameAsSalary) {
+                        sameBtn.classList.add('active');
+                        sameBtn.classList.remove('inactive');
+                        differentBtn.classList.add('inactive');
+                        differentBtn.classList.remove('active');
+                    } else {
+                        sameBtn.classList.remove('active');
+                        sameBtn.classList.add('inactive');
+                        differentBtn.classList.remove('inactive');
+                        differentBtn.classList.add('active');
+                    }
+                }
+            }
+            
+            // อัปเดตการแสดงผลสกุลเงินของ allowance inputs
+            updateAllowanceCurrencyDisplay();
+            updateTotalAllowances();
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(5);
+            }
+        }
+        
+        // Initialize allowance currency option on page load
+        function initializeAllowanceCurrency() {
+            setAllowanceCurrencyOption(true); // ตั้งค่าเริ่มต้นเป็นใช้สกุลเงินเดียวกับ salary
+        }
+
+        // Update allowance currency display - อัปเดตการแสดงผลสกุลเงินของ allowance inputs
+        function updateAllowanceCurrencyDisplay() {
+            const currencyType = document.getElementById('currencySelector').value;
+            const overtimeCurrency = document.getElementById('overtimeCurrency');
+            const otherAllowancesCurrency = document.getElementById('otherAllowancesCurrency');
+            
+            if (allowanceSameCurrencyAsSalary) {
+                // ถ้าเลือกใช้สกุลเงินเดียวกับ salary
+                if (currencyType === 'USD') {
+                    // เมื่อเงินเดือนเป็น USD - แสดง USD (ไม่ใช้ฟอนต์ Noto Sans Lao)
+                    overtimeCurrency.textContent = 'USD';
+                    otherAllowancesCurrency.textContent = 'USD';
+                    overtimeCurrency.classList.remove('lao-currency-text');
+                    otherAllowancesCurrency.classList.remove('lao-currency-text');
+                } else {
+                    // เมื่อเงินเดือนเป็น LAK - แสดง ກີບ พร้อมใช้ฟอนต์ Noto Sans Lao
+                    overtimeCurrency.textContent = 'ກີບ';
+                    otherAllowancesCurrency.textContent = 'ກີບ';
+                    overtimeCurrency.classList.add('lao-currency-text');
+                    otherAllowancesCurrency.classList.add('lao-currency-text');
+                }
+            } else {
+                // ถ้าเลือกใช้ LAK เท่านั้น - แสดง ກີບ พร้อมใช้ฟอนต์ Noto Sans Lao เสมอ (ไม่แสดงข้อความภาษาอังกฤษ)
+                overtimeCurrency.textContent = 'ກີບ';
+                otherAllowancesCurrency.textContent = 'ກີບ';
+                overtimeCurrency.classList.add('lao-currency-text');
+                otherAllowancesCurrency.classList.add('lao-currency-text');
+            }
+        }
+
+        // Update total allowances - อัปเดตการแสดงผลรวมของ allowances
         function updateTotalAllowances() {
             const ot = parseFloat(document.getElementById('overtime').value) || 0;
             const other = parseFloat(document.getElementById('otherAllowances').value) || 0;
+            const currencyType = document.getElementById('currencySelector').value;
+            const exchangeRate = parseFloat(document.getElementById('exchangeRate').value) || 21630;
             
-            const total = ot + other;
-            // Allowances แสดงเป็น LAK เสมอ
-            document.getElementById('totalAllowancesDisplay').textContent = formatCurrency(total, 'LAK');
+            let totalLAK = 0;
+            
+            if (allowanceSameCurrencyAsSalary) {
+                // ถ้าใช้สกุลเงินเดียวกับ salary
+                if (currencyType === 'USD') {
+                    // แปลงจาก USD เป็น LAK
+                    totalLAK = (ot + other) * exchangeRate;
+                } else {
+                    // ใช้ LAK โดยตรง
+                    totalLAK = ot + other;
+                }
+            } else {
+                // ถ้าใช้ LAK เท่านั้น
+                totalLAK = ot + other;
+            }
+            
+            // แสดงผลเป็น LAK เสมอ
+            const totalAllowancesDisplay = document.getElementById('totalAllowancesDisplay');
+            if (totalAllowancesDisplay) {
+                totalAllowancesDisplay.textContent = formatCurrency(totalLAK, 'LAK');
+            }
         }
 
         // Format number with commas
@@ -1412,9 +1802,9 @@ lo: {
         
         // ฟังก์ชันสำหรับแสดงสกุลเงิน - ใช้ ກີບ แทน LAK สำหรับลาว
         function getCurrencyDisplay(currencyType) {
-            // ถ้าไม่ระบุ currencyType ให้ตรวจสอบจาก selector
+            // ถ้าไม่ระบุ currencyType ให้ตรวจสอบจาก selector (default เป็น LAK)
             if (!currencyType) {
-                currencyType = document.getElementById('currencySelector')?.value || 'USD';
+                currencyType = document.getElementById('currencySelector')?.value || 'LAK';
             }
             // ถ้าเลือก USD ให้แสดง USD, ถ้าเลือก LAK ให้แสดง ກີບ
             return currencyType === 'USD' ? 'USD' : 'ກີບ';
@@ -1422,9 +1812,9 @@ lo: {
         
         // ฟังก์ชันสำหรับแสดงจำนวนเงินพร้อมสกุลเงิน
         function formatCurrency(num, currencyType) {
-            // ถ้าไม่ระบุ currencyType ให้ตรวจสอบจาก selector
+            // ถ้าไม่ระบุ currencyType ให้ตรวจสอบจาก selector (default เป็น LAK)
             if (!currencyType) {
-                currencyType = document.getElementById('currencySelector')?.value || 'USD';
+                currencyType = document.getElementById('currencySelector')?.value || 'LAK';
             }
             
             if (currencyType === 'USD') {
@@ -1437,7 +1827,7 @@ lo: {
         // ฟังก์ชันสำหรับแปลง LAK เป็น USD สำหรับแสดงผล
         function formatCurrencyWithConversion(lakAmount, currencyType, exchangeRate) {
             if (!currencyType) {
-                currencyType = document.getElementById('currencySelector')?.value || 'USD';
+                currencyType = document.getElementById('currencySelector')?.value || 'LAK';
             }
             
             if (currencyType === 'USD' && exchangeRate) {
@@ -1519,8 +1909,23 @@ lo: {
                 monthlySalaryLAK = salaryType === 'annual' ? salaryInput / 12 : salaryInput;
             }
             
-            // Calculate total allowances (all are in LAK)
-            const totalAllowances = overtime + otherAllowances;
+            // Calculate total allowances - แปลงสกุลเงินของ allowance ตามตัวเลือก
+            let totalAllowancesLAK = 0;
+            if (allowanceSameCurrencyAsSalary) {
+                // ถ้าใช้สกุลเงินเดียวกับ salary
+                if (currencyType === 'USD') {
+                    // แปลงจาก USD เป็น LAK
+                    totalAllowancesLAK = (overtime + otherAllowances) * exchangeRate;
+                } else {
+                    // ใช้ LAK โดยตรง
+                    totalAllowancesLAK = overtime + otherAllowances;
+                }
+            } else {
+                // ถ้าใช้ LAK เท่านั้น
+                totalAllowancesLAK = overtime + otherAllowances;
+            }
+            
+            const totalAllowances = totalAllowancesLAK;
             
             // Total gross salary including all allowances
             const totalGrossLAK = monthlySalaryLAK + totalAllowances;
@@ -1553,7 +1958,8 @@ lo: {
                 allowances: {
                     overtime: overtime,
                     other: otherAllowances,
-                    total: totalAllowances
+                    total: totalAllowances,
+                    sameCurrencyAsSalary: allowanceSameCurrencyAsSalary
                 },
                 includeLSSO,
                 previousTaxLAK,
@@ -1589,51 +1995,61 @@ lo: {
         function updateDisplays() {
             const data = calculationData;
             
+            // Helper function to safely set textContent
+            function safeSetText(id, text) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = text;
+                }
+            }
+            
             // Net salary highlight - แสดงเป็น LAK เสมอ (เหมือนเดิม)
-            document.getElementById('netSalaryHighlight').textContent = formatCurrency(data.netLAK, 'LAK');
-            document.getElementById('netSalaryUSD').textContent = '$' + data.netUSD.toFixed(2) + ' USD';
+            safeSetText('netSalaryHighlight', formatCurrency(data.netLAK, 'LAK'));
+            safeSetText('netSalaryUSD', '$' + data.netUSD.toFixed(2) + ' USD');
             
             // Summary stats - แสดงเป็น LAK เสมอ
-            document.getElementById('totalGrossDisplay').textContent = formatCurrency(data.totalGrossLAK, 'LAK');
-            document.getElementById('totalDeductionsDisplay').textContent = formatCurrency(data.lssoAmount + data.pitAmount, 'LAK');
-            document.getElementById('effectiveRateDisplay').textContent = data.effectiveRate.toFixed(1) + '%';
+            safeSetText('totalGrossDisplay', formatCurrency(data.totalGrossLAK, 'LAK'));
+            safeSetText('totalDeductionsDisplay', formatCurrency(data.lssoAmount + data.pitAmount, 'LAK'));
+            safeSetText('effectiveRateDisplay', data.effectiveRate.toFixed(1) + '%');
             
-            // Quick displays - แสดงเป็น LAK เสมอ
-            document.getElementById('quickNetDisplay').textContent = formatCurrency(data.netLAK, 'LAK');
+            // Quick displays - แสดงเป็น LAK เสมอ (ตรวจสอบว่ามี element หรือไม่)
+            safeSetText('quickNetDisplay', formatCurrency(data.netLAK, 'LAK'));
             updateQuickDisplays();
             
             // Breakdown - แสดงเป็น LAK เสมอ
-            document.getElementById('baseSalaryDisplay').textContent = data.inputCurrency === 'USD' ? 
-                '$' + data.inputAmount.toLocaleString() : formatCurrency(data.inputAmount, 'LAK');
+            safeSetText('baseSalaryDisplay', data.inputCurrency === 'USD' ? 
+                '$' + data.inputAmount.toLocaleString() : formatCurrency(data.inputAmount, 'LAK'));
             
             // Allowances และ deductions แสดงเป็น LAK เสมอ
-            document.getElementById('breakdownAllowancesDisplay').textContent = formatCurrency(data.allowances.total, 'LAK');
-            document.getElementById('grossSalaryDisplay').textContent = formatCurrency(data.totalGrossLAK, 'LAK');
-            document.getElementById('lssoAmountDisplay').textContent = '-' + formatCurrency(data.lssoAmount, 'LAK');
-            document.getElementById('taxableIncomeDisplay').textContent = formatCurrency(data.taxableIncome, 'LAK');
-            document.getElementById('pitAmountDisplay').textContent = '-' + formatCurrency(data.pitAmount, 'LAK');
-            document.getElementById('netSalaryDisplay').textContent = formatCurrency(data.netLAK, 'LAK');
-            document.getElementById('netSalaryUSDDisplay').textContent = '$' + data.netUSD.toFixed(2) + ' USD';
+            safeSetText('breakdownAllowancesDisplay', formatCurrency(data.allowances.total, 'LAK'));
+            safeSetText('grossSalaryDisplay', formatCurrency(data.totalGrossLAK, 'LAK'));
+            safeSetText('lssoAmountDisplay', '-' + formatCurrency(data.lssoAmount, 'LAK'));
+            safeSetText('taxableIncomeDisplay', formatCurrency(data.taxableIncome, 'LAK'));
+            safeSetText('pitAmountDisplay', '-' + formatCurrency(data.pitAmount, 'LAK'));
+            safeSetText('netSalaryDisplay', formatCurrency(data.netLAK, 'LAK'));
+            safeSetText('netSalaryUSDDisplay', '$' + data.netUSD.toFixed(2) + ' USD');
             
-            // Tax brackets
+            // Tax brackets - ตรวจสอบว่ามี element หรือไม่
             const taxBracketDetails = document.getElementById('taxBracketDetails');
-            taxBracketDetails.innerHTML = '';
-            
-            if (data.taxDetails && data.taxDetails.length > 0) {
-                data.taxDetails.forEach(detail => {
-                    const div = document.createElement('div');
-                    div.className = 'flex items-center justify-between py-1.5 px-2 bg-gray-50 rounded-lg';
-                    div.innerHTML = `
-                        <div>
-                            <p class="text-xs text-gray-500">${detail.range} ${getCurrencyDisplay('LAK')}</p>
-                            <p class="text-xs font-medium text-gray-700">${detail.rate}</p>
-                        </div>
-                        <p class="text-xs font-semibold text-orange-600 number-display">-${formatCurrency(detail.tax, 'LAK')}</p>
-                    `;
-                    taxBracketDetails.appendChild(div);
-                });
-            } else {
-                taxBracketDetails.innerHTML = '<p class="text-sm text-gray-500 text-center py-2">No tax applicable</p>';
+            if (taxBracketDetails) {
+                taxBracketDetails.innerHTML = '';
+                
+                if (data.taxDetails && data.taxDetails.length > 0) {
+                    data.taxDetails.forEach(detail => {
+                        const div = document.createElement('div');
+                        div.className = 'flex items-center justify-between py-1.5 px-2 bg-gray-50 rounded-lg';
+                        div.innerHTML = `
+                            <div>
+                                <p class="text-xs text-gray-500">${detail.range} ${getCurrencyDisplay('LAK')}</p>
+                                <p class="text-xs font-medium text-gray-700">${detail.rate}</p>
+                            </div>
+                            <p class="text-xs font-semibold text-orange-600 number-display">-${formatCurrency(detail.tax, 'LAK')}</p>
+                        `;
+                        taxBracketDetails.appendChild(div);
+                    });
+                } else {
+                    taxBracketDetails.innerHTML = '<p class="text-sm text-gray-500 text-center py-2">No tax applicable</p>';
+                }
             }
         }
 
@@ -1932,6 +2348,10 @@ lo: {
             if (calc.allowances) {
                 document.getElementById('overtime').value = calc.allowances.overtime || 0;
                 document.getElementById('otherAllowances').value = calc.allowances.other || 0;
+                // โหลดการตั้งค่าสกุลเงินของ allowance
+                if (calc.allowances.sameCurrencyAsSalary !== undefined) {
+                    setAllowanceCurrencyOption(calc.allowances.sameCurrencyAsSalary);
+                }
                 updateTotalAllowances();
             }
             
