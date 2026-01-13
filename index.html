@@ -1559,6 +1559,9 @@ lo: {
                         
                         // อัปเดต quick displays
                         updateQuickDisplays();
+                        
+                        // ซ่อนผลลัพธ์เมื่อมีการเปลี่ยนแปลง base salary
+                        hideResults();
                     });
                     
                     // Format เมื่อ blur (เมื่อออกจาก input)
@@ -1573,7 +1576,37 @@ lo: {
                 // อัปเดต allowance currency เมื่อเปลี่ยน exchange rate
                 const exchangeRateInput = document.getElementById('exchangeRate');
                 if (exchangeRateInput) {
-                    exchangeRateInput.addEventListener('input', updateTotalAllowances);
+                    exchangeRateInput.addEventListener('input', function() {
+                        updateTotalAllowances();
+                        hideResults(); // ซ่อนผลลัพธ์เมื่อมีการเปลี่ยนแปลง exchange rate
+                    });
+                }
+                
+                // เพิ่ม event listeners สำหรับ input fields อื่นๆ เพื่อซ่อนผลลัพธ์เมื่อมีการเปลี่ยนแปลง
+                const salaryTypeSelect = document.getElementById('salaryType');
+                if (salaryTypeSelect) {
+                    salaryTypeSelect.addEventListener('change', hideResults);
+                }
+                
+                const overtimeInput = document.getElementById('overtime');
+                if (overtimeInput) {
+                    overtimeInput.addEventListener('input', function() {
+                        updateTotalAllowances();
+                        hideResults();
+                    });
+                }
+                
+                const otherAllowancesInput = document.getElementById('otherAllowances');
+                if (otherAllowancesInput) {
+                    otherAllowancesInput.addEventListener('input', function() {
+                        updateTotalAllowances();
+                        hideResults();
+                    });
+                }
+                
+                const previousTaxInput = document.getElementById('previousTax');
+                if (previousTaxInput) {
+                    previousTaxInput.addEventListener('input', hideResults);
                 }
                 
                 // เพิ่ม event listeners เพื่อติดตาม user interaction สำหรับ vibrate
@@ -1701,6 +1734,9 @@ lo: {
             updateAllowanceCurrencyDisplay();
             updateTotalAllowances();
             updateQuickDisplays();
+            
+            // ซ่อนผลลัพธ์เมื่อมีการเปลี่ยนแปลงสกุลเงิน
+            hideResults();
         }
 
         // Helper function สำหรับ vibrate ที่ปลอดภัย - จัดการ error ที่เกิดจาก browser policy
@@ -1722,6 +1758,7 @@ lo: {
 
         // Set social security option
         function setSocialSecurity(value, skipVibrate = false) {
+            const previousValue = includeLSSO;
             includeLSSO = value;
             
             const yesBtn = document.getElementById('ssoYes');
@@ -1739,6 +1776,11 @@ lo: {
                 noBtn.classList.add('active');
             }
             
+            // ซ่อนผลลัพธ์เมื่อมีการเปลี่ยนแปลง (ถ้าไม่ใช่ initialization)
+            if (!skipVibrate && previousValue !== value) {
+                hideResults();
+            }
+            
             // ใช้ safeVibrate แทน navigator.vibrate โดยตรง - ข้าม vibrate ถ้าเป็น initialization
             if (!skipVibrate) {
                 safeVibrate(5);
@@ -1747,6 +1789,7 @@ lo: {
 
         // Toggle allowance currency option - ใช้กับ toggle switch ใหม่
         function toggleAllowanceCurrency(checked, skipVibrate = false) {
+            const previousValue = allowanceSameCurrencyAsSalary;
             allowanceSameCurrencyAsSalary = checked;
             
             const toggle = document.getElementById('allowanceCurrencyToggle');
@@ -1776,6 +1819,11 @@ lo: {
             updateAllowanceCurrencyDisplay();
             updateTotalAllowances();
             
+            // ซ่อนผลลัพธ์เมื่อมีการเปลี่ยนแปลง (ถ้าไม่ใช่ initialization)
+            if (!skipVibrate && previousValue !== checked) {
+                hideResults();
+            }
+            
             // เพิ่ม haptic feedback (ถ้ารองรับ) - ข้าม vibrate ถ้าเป็น initialization
             if (!skipVibrate) {
                 safeVibrate(10);
@@ -1784,6 +1832,7 @@ lo: {
         
         // Set allowance currency option - ฟังก์ชันสำหรับตั้งค่าว่า allowance ใช้สกุลเงินเดียวกับ salary หรือไม่ (รองรับทั้ง toggle switch และปุ่มเก่า)
         function setAllowanceCurrencyOption(sameAsSalary, skipVibrate = false) {
+            const previousValue = allowanceSameCurrencyAsSalary;
             allowanceSameCurrencyAsSalary = sameAsSalary;
             
             // ตรวจสอบว่ามี toggle switch หรือไม่
@@ -1815,6 +1864,11 @@ lo: {
             // อัปเดตการแสดงผลสกุลเงินของ allowance inputs
             updateAllowanceCurrencyDisplay();
             updateTotalAllowances();
+            
+            // ซ่อนผลลัพธ์เมื่อมีการเปลี่ยนแปลง (ถ้าไม่ใช่ initialization)
+            if (!skipVibrate && previousValue !== sameAsSalary) {
+                hideResults();
+            }
             
             // ข้าม vibrate ถ้าเป็น initialization
             if (!skipVibrate) {
@@ -2178,11 +2232,24 @@ lo: {
             }
         }
 
+        // Hide results when input changes - ซ่อนผลลัพธ์เมื่อมีการเปลี่ยนแปลงข้อมูล
+        function hideResults() {
+            const results = document.getElementById('results');
+            if (results && !results.classList.contains('hidden')) {
+                results.classList.add('hidden');
+            }
+            // ซ่อน annual summary และ comparison tool ด้วย
+            const annualSummary = document.getElementById('annualSummary');
+            const comparisonTool = document.getElementById('comparisonTool');
+            if (annualSummary) annualSummary.classList.add('hidden');
+            if (comparisonTool) comparisonTool.classList.add('hidden');
+        }
+
         // Scroll to results
         function scrollToResults() {
             const results = document.getElementById('results');
             if (results.classList.contains('hidden')) {
-                alert(currentLanguage === 'en' ? 'Please calculate first' : 'กรุณาคำนวณก่อน');
+                alert(currentLanguage === 'en' ? 'Please calculate first' : 'ກະລຸນາຄຳນວນກ່ອນ');
                 return;
             }
             results.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2264,6 +2331,11 @@ lo: {
             document.getElementById('annualSummary').classList.remove('hidden');
             document.getElementById('comparisonTool').classList.add('hidden');
             
+            // Scroll ไปที่ results section เพื่อให้เห็นผลลัพธ์
+            setTimeout(() => {
+                scrollToResults();
+            }, 100);
+            
             safeVibrate(10);
         }
 
@@ -2275,6 +2347,11 @@ lo: {
             if (comparisonTool.classList.contains('hidden')) {
                 comparisonTool.classList.remove('hidden');
                 annualSummary.classList.add('hidden');
+                
+                // Scroll ไปที่ results section เพื่อให้เห็นผลลัพธ์
+                setTimeout(() => {
+                    scrollToResults();
+                }, 100);
             } else {
                 comparisonTool.classList.add('hidden');
             }
@@ -2318,6 +2395,11 @@ lo: {
                     </p>
                 </div>
             `;
+            
+            // Scroll ไปที่ results section เพื่อให้เห็นผลลัพธ์การเปรียบเทียบ
+            setTimeout(() => {
+                scrollToResults();
+            }, 100);
         }
 
         // Quick calculate for comparison
