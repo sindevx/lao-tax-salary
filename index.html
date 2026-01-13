@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0ea5e9">
+    <meta name="description" content="Lao PDR Salary Tax Calculator - Calculate LSSO, PIT, and Net Salary">
+    <title>Lao PDR Salary Tax Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    },
+                    animation: {
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'slide-down': 'slideDown 0.3s ease-out',
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'pulse-soft': 'pulseSoft 2s infinite',
+                    },
+                    keyframes: {
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        slideDown: {
+                            '0%': { transform: 'translateY(-20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        pulseSoft: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.7' },
+                        },
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            overscroll-behavior-y: none;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            padding-bottom: 0;
+        }
+        
+        input, textarea, select {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        
+        .mobile-input {
+            font-size: 16px;
+        }
+        
+        .section-card {
+            transition: transform 0.15s ease;
+        }
+        
+        .section-card:active {
+            transform: scale(0.99);
+        }
+        
+        .result-card {
+            transition: all 0.2s ease;
+        }
+        
+        .result-card:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-primary {
+            transition: all 0.15s ease;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+        
+        .input-field {
+            transition: all 0.15s ease;
+        }
+        
+        .input-field:active {
+            transform: scale(0.995);
+        }
+        
+        @media (hover: hover) {
+            .section-card:hover {
+                transform: translateY(-2px);
+            }
+            .result-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.15);
+            }
+            .btn-primary:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+            }
+            .input-field:hover {
+                border-color: #0ea5e9;
+            }
+        }
+        
+        .number-display {
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .toggle-option {
+            transition: all 0.2s ease;
+        }
+        
+        .toggle-option.active {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .toggle-option.inactive {
+            background: #f1f5f9;
+            color: #64748b;
+            border-color: #e2e8f0;
+        }
+        
+        .currency-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+        
+        .currency-badge.usd {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+        
+        .currency-badge.lak {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        /* Bottom Sheet */
+        .bottom-sheet-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 40;
+        }
+        
+        .bottom-sheet-overlay.active {
+            display: block;
+        }
+        
+        .bottom-sheet {
+            display: none;
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            border-radius: 24px 24px 0 0;
+            z-index: 50;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .bottom-sheet.active {
+            display: block;
+            transform: translateY(0);
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            z-index: 40;
+        }
+        
+        .modal-overlay.active {
+            display: block;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            border-radius: 24px 24px 0 0;
+            z-index: 50;
+            max-height: 70vh;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.active {
+            display: block;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- App Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
+        <div class="px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/25">
+                        <span class="text-xl">🇱🇦</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-gray-900 leading-tight" data-i18n="headerTitle">Lao PDR Salary Tax</h1>
+                        <p class="text-xs text-gray-500" data-i18n="headerSubtitle">Calculate LSSO, PIT & Net Salary</p>
+                    </div>
+                </div>
+                
+                <!-- Language Toggle -->
+                <div class="relative">
+                    <button 
+                        onclick="toggleLanguage()" 
+                        class="flex items-center space-x-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+                    >
+                        <span class="text-lg" id="currentLangIcon">🇬🇧</span>
+                        <span class="text-sm font-semibold text-gray-700" id="currentLangText">EN</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pb-24">
+        <div class="px-4 py-4 space-y-4 max-w-lg mx-auto">
+            <!-- Info Card -->
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4">
+                <div class="flex items-start space-x-3">
+                    <svg class="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm font-semibold text-amber-800" data-i18n="noteTitle">Note:</p>
+                        <p class="text-xs text-amber-700 mt-0.5" data-i18n="noteText">Using 2025 tax rules. Verify USD-LAK rate.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats Cards -->
+            <div class="grid grid-cols-2 gap-3">
+                <div class="section-card bg-white rounded-2xl p-4 border border-gray-200 shadow-sm cursor-pointer" onclick="focusSalaryInput()">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-11 h-11 bg-primary-100 rounded-xl flex items-center justify-center">
+                            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs text-gray-500" data-i18n="quickEnterSalary">Enter Salary</p>
+                            <p class="text-base font-bold text-gray-900 number-display truncate" id="quickSalaryDisplay">$0</p>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="section-card bg-white rounded-2xl p-4 border border-gray-200 shadow-sm cursor-pointer" onclick="scrollToResults()">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-11 h-11 bg-green-100 rounded-xl flex items-center justify-center">
+                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs text-gray-500" data-i18n="quickNetSalary">Net Salary</p>
+                            <p class="text-base font-bold text-green-600 number-display truncate" id="quickNetDisplay">0 LAK</p>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Input Section -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <!-- Header -->
+                <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+                    <h2 class="text-sm font-semibold text-gray-800" data-i18n="mainInputSection">Main Information</h2>
+                </div>
+                
+                <!-- Currency & Salary Type -->
+                <div class="px-4 py-3 border-b border-gray-100">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-2" data-i18n="labelCurrency">Currency</label>
+                            <select 
+                                id="currencySelector" 
+                                onchange="toggleCurrencyInput()"
+                                class="input-field w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            >
+                                <option value="USD">🇺🇸 USD</option>
+                                <option value="LAK">🇱🇦 LAK</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-2" data-i18n="labelSalaryType">Salary Type</label>
+                            <select 
+                                id="salaryType"
+                                class="input-field w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            >
+                                <option value="monthly" data-i18n="monthly">Monthly</option>
+                                <option value="annual" data-i18n="annual">Annual</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Base Salary -->
+                <div class="px-4 py-3 border-b border-gray-100">
+                    <label class="block text-xs font-semibold text-gray-600 mb-2" id="salaryLabel" data-i18n="salaryLabel">Base Salary</label>
+                    <div class="relative">
+                        <input 
+                            type="number" 
+                            id="grossSalary" 
+                            placeholder="0" 
+                            step="0.01"
+                            inputmode="decimal"
+                            class="mobile-input input-field w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-lg font-bold text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        >
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2">
+                            <span id="salaryCurrencyBadge" class="currency-badge usd">USD</span>
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Exchange Rate -->
+                <div class="px-4 py-3">
+                    <label class="block text-xs font-semibold text-gray-600 mb-2" data-i18n="labelExchange">Exchange Rate (1 USD = LAK)</label>
+                    <div class="relative">
+                        <input 
+                            type="number" 
+                            id="exchangeRate" 
+                            value="21630" 
+                            placeholder="0" 
+                            step="0.01"
+                            inputmode="decimal"
+                            class="mobile-input input-field w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-base font-medium text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        >
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">LAK</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Allowances Section -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <!-- Header -->
+                <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <h2 class="text-sm font-semibold text-gray-800" data-i18n="allowancesSection">Allowances & Benefits</h2>
+                    </div>
+                </div>
+                
+                <div class="p-4 space-y-3">
+                    <!-- Overtime (OT) -->
+                    <div class="flex items-center justify-between py-2">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <span class="text-lg">⏰</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900" data-i18n="overtime">Overtime (OT)</p>
+                                <p class="text-xs text-gray-500" data-i18n="overtimeHelp">Extra hours payment</p>
+                            </div>
+                        </div>
+                        <div class="relative w-32">
+                            <input 
+                                type="number" 
+                                id="overtime" 
+                                value="0" 
+                                placeholder="0"
+                                inputmode="decimal"
+                                class="mobile-input w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-right text-sm font-medium focus:ring-2 focus:ring-primary-500"
+                            >
+                            <span class="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-gray-400">LAK</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Other Allowances -->
+                    <div class="flex items-center justify-between py-2">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <span class="text-lg">📋</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900" data-i18n="otherAllowances">Other Allowances</p>
+                                <p class="text-xs text-gray-500" data-i18n="otherAllowancesHelp">Bonus, incentives, etc.</p>
+                            </div>
+                        </div>
+                        <div class="relative w-32">
+                            <input 
+                                type="number" 
+                                id="otherAllowances" 
+                                value="0" 
+                                placeholder="0"
+                                inputmode="decimal"
+                                class="mobile-input w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-right text-sm font-medium focus:ring-2 focus:ring-primary-500"
+                            >
+                            <span class="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-gray-400">LAK</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Total Allowances Display -->
+                    <div class="mt-4 p-3 bg-primary-50 rounded-xl flex items-center justify-between">
+                        <span class="text-sm font-semibold text-primary-800" data-i18n="totalAllowances">Total Allowances</span>
+                        <span id="totalAllowancesDisplay" class="text-lg font-bold text-primary-600 number-display">0 LAK</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deductions & Options -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <!-- Header -->
+                <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+                    <h2 class="text-sm font-semibold text-gray-800" data-i18n="deductionsOptions">Deductions & Options</h2>
+                </div>
+                
+                <div class="p-4 space-y-4">
+                    <!-- Social Security (LSSO) -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-2" data-i18n="labelSSO">Social Security (LSSO)</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button 
+                                id="ssoYes"
+                                onclick="setSocialSecurity(true)"
+                                class="toggle-option active px-4 py-3 rounded-xl text-sm font-semibold text-center border-2"
+                                data-i18n="yesOption"
+                            >
+                                Yes (5.5%)
+                            </button>
+                            <button 
+                                id="ssoNo"
+                                onclick="setSocialSecurity(false)"
+                                class="toggle-option inactive px-4 py-3 rounded-xl text-sm font-semibold text-center border-2"
+                                data-i18n="noOption"
+                            >
+                                No (Exempt)
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Previous Tax Paid -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-2" data-i18n="labelPrevTax">Previous Tax Paid</label>
+                        <div class="relative">
+                            <input 
+                                type="number" 
+                                id="previousTax" 
+                                value="0" 
+                                placeholder="0"
+                                inputmode="decimal"
+                                class="mobile-input w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500"
+                            >
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">LAK</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1" data-i18n="prevTaxHelp">Deducts from calculated tax</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculate Button -->
+            <button 
+                onclick="calculateSalary()"
+                class="btn-primary w-full py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-bold rounded-2xl shadow-lg shadow-primary-500/25 flex items-center justify-center space-x-2 cursor-pointer"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                </svg>
+                <span class="text-lg" data-i18n="btnCalculate">Calculate Net Salary</span>
+            </button>
+
+            <!-- Results Section -->
+            <div id="results" class="hidden space-y-4 animate-slide-up">
+                <!-- Net Salary Highlight Card -->
+                <div class="bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 rounded-3xl p-6 text-white shadow-xl shadow-primary-500/30">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm text-primary-100 mb-1" data-i18n="yourNetSalary">Your Net Salary</p>
+                            <p class="text-4xl font-bold number-display" id="netSalaryHighlight">0 LAK</p>
+                            <p class="text-lg text-primary-200 mt-1 number-display" id="netSalaryUSD">$0.00 USD</p>
+                        </div>
+                        <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 pt-4 border-t border-primary-400/30">
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <p class="text-xs text-primary-200" data-i18n="totalGross">Gross</p>
+                                <p class="text-xl font-bold number-display" id="totalGrossDisplay">0 LAK</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-primary-200" data-i18n="totalDeductions">Deductions</p>
+                                <p class="text-xl font-bold number-display text-red-200" id="totalDeductionsDisplay">0 LAK</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-primary-200" data-i18n="effectiveRate">Tax Rate</p>
+                                <p class="text-xl font-bold number-display" id="effectiveRateDisplay">0%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Breakdown -->
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+                        <h3 class="font-semibold text-gray-900" data-i18n="breakdownTitle">Detailed Breakdown</h3>
+                    </div>
+                    
+                    <div class="divide-y divide-gray-100">
+                        <!-- Base Salary -->
+                        <div class="px-4 py-3 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                                    <span class="text-lg">💰</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-900" data-i18n="baseSalary">Base Salary</p>
+                                    <p class="text-xs text-gray-500" id="baseSalaryCurrency">USD</p>
+                                </div>
+                            </div>
+                            <p class="text-sm font-bold text-gray-900 number-display" id="baseSalaryDisplay">0</p>
+                        </div>
+                        
+                        <!-- Total Allowances -->
+                        <div class="px-4 py-3 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+                                    <span class="text-lg">➕</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-900" data-i18n="totalAllowances">Total Allowances</p>
+                                    <p class="text-xs text-gray-500" data-i18n="allBenefits">All benefits included</p>
+                                </div>
+                            </div>
+                            <p class="text-sm font-bold text-green-600 number-display" id="breakdownAllowancesDisplay">0 LAK</p>
+                        </div>
+                        
+                        <!-- Gross Salary -->
+                        <div class="px-4 py-3 flex items-center justify-between bg-primary-50">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
+                                    <span class="text-lg">📊</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-primary-900" data-i18n="grossSalary">Gross Salary</p>
+                                    <p class="text-xs text-primary-600" data-i18n="beforeDeductions">Before deductions</p>
+                                </div>
+                            </div>
+                            <p class="text-lg font-bold text-primary-700 number-display" id="grossSalaryDisplay">0 LAK</p>
+                        </div>
+                        
+                        <!-- LSSO Deduction -->
+                        <div class="px-4 py-3 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
+                                    <span class="text-lg">🔴</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-900" data-i18n="lssoDeduction">LSSO Deduction</p>
+                                    <p class="text-xs text-gray-500">5.5% of salary</p>
+                                </div>
+                            </div>
+                            <p class="text-sm font-bold text-red-600 number-display" id="lssoAmountDisplay">-0 LAK</p>
+                        </div>
+                        
+                        <!-- Taxable Income -->
+                        <div class="px-4 py-3 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-yellow-50 rounded-xl flex items-center justify-center">
+                                    <span class="text-lg">📋</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-900" data-i18n="taxableIncome">Taxable Income</p>
+                                    <p class="text-xs text-gray-500" data-i18n="afterLSSO">After LSSO</p>
+                                </div>
+                            </div>
+                            <p class="text-sm font-bold text-gray-900 number-display" id="taxableIncomeDisplay">0 LAK</p>
+                        </div>
+                        
+                        <!-- PIT Tax -->
+                        <div class="px-4 py-3 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center">
+                                    <span class="text-lg">📈</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-900" data-i18n="pitTax">PIT Tax</p>
+                                    <p class="text-xs text-gray-500">Personal Income Tax</p>
+                                </div>
+                            </div>
+                            <p class="text-sm font-bold text-orange-600 number-display" id="pitAmountDisplay">-0 LAK</p>
+                        </div>
+                        
+                        <!-- Net Salary -->
+                        <div class="px-4 py-4 flex items-center justify-between bg-gradient-to-r from-green-50 to-emerald-50">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                                    <span class="text-xl">✅</span>
+                                </div>
+                                <div>
+                                    <p class="text-lg font-bold text-gray-900" data-i18n="netSalary">Net Salary</p>
+                                    <p class="text-xs text-gray-600" data-i18n="takeHome">Take home pay</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xl font-bold text-green-600 number-display" id="netSalaryDisplay">0 LAK</p>
+                                <p class="text-sm text-green-500 number-display" id="netSalaryUSDDisplay">$0.00 USD</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tax Brackets -->
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+                        <h3 class="font-semibold text-gray-900" data-i18n="taxBracketsTitle">Tax Brackets Applied</h3>
+                    </div>
+                    
+                    <div class="p-4">
+                        <div class="space-y-2" id="taxBracketDetails">
+                            <!-- Tax brackets will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="grid grid-cols-4 gap-2">
+                    <button 
+                        onclick="exportToExcel()"
+                        class="flex flex-col items-center space-y-1.5 p-3 bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 rounded-xl transition-all cursor-pointer"
+                    >
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <span class="text-xs font-semibold text-green-700" data-i18n="btnExport">Export</span>
+                    </button>
+                    
+                    <button 
+                        onclick="calculateAnnualSummary()"
+                        class="flex flex-col items-center space-y-1.5 p-3 bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 rounded-xl transition-all cursor-pointer"
+                    >
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <span class="text-xs font-semibold text-purple-700" data-i18n="btnAnnual">Annual</span>
+                    </button>
+                    
+                    <button 
+                        onclick="compareSalaries()"
+                        class="flex flex-col items-center space-y-1.5 p-3 bg-gradient-to-br from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 rounded-xl transition-all cursor-pointer"
+                    >
+                        <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <span class="text-xs font-semibold text-orange-700" data-i18n="btnCompare">Compare</span>
+                    </button>
+                    
+                    <button 
+                        onclick="showMoreOptions()"
+                        class="flex flex-col items-center space-y-1.5 p-3 bg-gradient-to-br from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 rounded-xl transition-all cursor-pointer"
+                    >
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                        </svg>
+                        <span class="text-xs font-semibold text-gray-700" data-i18n="btnMore">More</span>
+                    </button>
+                </div>
+
+                <!-- Annual Summary -->
+                <div id="annualSummary" class="hidden bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden animate-slide-up">
+                    <div class="px-4 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white flex items-center justify-between">
+                        <h3 class="font-semibold" data-i18n="annualSummaryTitle">Annual Summary</h3>
+                        <button onclick="closeAnnualSummary()" class="p-1 hover:bg-white/20 rounded-lg transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="p-4" id="annualBreakdown"></div>
+                </div>
+
+                <!-- Comparison Tool -->
+                <div id="comparisonTool" class="hidden bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden animate-slide-up">
+                    <div class="px-4 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white flex items-center justify-between">
+                        <h3 class="font-semibold" data-i18n="comparisonTitle">Compare Salaries</h3>
+                        <button onclick="closeComparison()" class="p-1 hover:bg-white/20 rounded-lg transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="p-4 space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1.5" data-i18n="compareSalary1">Salary 1</label>
+                            <input 
+                                type="number" 
+                                id="compareSalary1" 
+                                placeholder="0"
+                                inputmode="decimal"
+                                class="mobile-input w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500"
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1.5" data-i18n="compareSalary2">Salary 2</label>
+                            <input 
+                                type="number" 
+                                id="compareSalary2" 
+                                placeholder="0"
+                                inputmode="decimal"
+                                class="mobile-input w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500"
+                            >
+                        </div>
+                        
+                        <button 
+                            onclick="runComparison()"
+                            class="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-xl shadow-lg cursor-pointer"
+                            data-i18n="btnCompareAction"
+                        >
+                            Compare
+                        </button>
+                        
+                        <div id="comparisonResults"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bg-white border-t border-gray-200 fixed bottom-0 left-0 right-0 z-20 py-2 shadow-lg" style="padding-bottom: calc(env(safe-area-inset-bottom) + 8px);">
+        <div class="flex items-center justify-around px-2 py-2">
+            <button 
+                onclick="scrollToTop()"
+                class="flex flex-col items-center space-y-1 px-4 py-2 text-primary-600 cursor-pointer"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                <span class="text-xs font-semibold" data-i18n="navHome">Home</span>
+            </button>
+            
+            <button 
+                onclick="printReport()"
+                class="flex flex-col items-center space-y-1 px-4 py-2 text-gray-500 hover:text-primary-600 transition-colors cursor-pointer"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                </svg>
+                <span class="text-xs font-medium" data-i18n="navPrint">Print</span>
+            </button>
+            
+            <button 
+                onclick="saveCalculation()"
+                class="flex flex-col items-center space-y-1 px-4 py-2 text-gray-500 hover:text-primary-600 transition-colors cursor-pointer"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                </svg>
+                <span class="text-xs font-medium" data-i18n="navSave">Save</span>
+            </button>
+            
+            <button 
+                onclick="loadSavedCalculations()"
+                class="flex flex-col items-center space-y-1 px-4 py-2 text-gray-500 hover:text-primary-600 transition-colors cursor-pointer"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                </svg>
+                <span class="text-xs font-medium" data-i18n="navSaved">Saved</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Bottom Sheet Overlay -->
+    <div class="bottom-sheet-overlay" id="bottomSheetOverlay" onclick="closeAllModals()"></div>
+
+    <!-- More Options Bottom Sheet -->
+    <div class="bottom-sheet" id="moreOptionsSheet">
+        <div class="bg-white rounded-t-3xl shadow-xl">
+            <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mt-3 mb-4"></div>
+            
+            <div class="px-4 pb-6 space-y-2">
+                <h3 class="text-lg font-bold text-gray-900 px-2 mb-4" data-i18n="moreOptionsTitle">More Options</h3>
+                
+                <button onclick="closeAllModals(); printReport();" class="w-full flex items-center space-x-3 px-4 py-3.5 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer">
+                    <div class="w-11 h-11 bg-cyan-100 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-semibold text-gray-900" data-i18n="btnPrint">Print Report</span>
+                </button>
+                
+                <button onclick="closeAllModals(); loadSavedCalculations();" class="w-full flex items-center space-x-3 px-4 py-3.5 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer">
+                    <div class="w-11 h-11 bg-indigo-100 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-semibold text-gray-900" data-i18n="loadSaved">Load Saved</span>
+                </button>
+                
+                <button onclick="closeAllModals();" class="w-full flex items-center space-x-3 px-4 py-3.5 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer">
+                    <div class="w-11 h-11 bg-gray-100 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-semibold text-gray-900" data-i18n="btnCancel">Cancel</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Saved Modal Overlay -->
+    <div class="modal-overlay" id="savedModalOverlay" onclick="closeSavedModal()"></div>
+
+    <!-- Saved Calculations Modal -->
+    <div class="modal" id="savedModal">
+        <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mt-3 mb-4"></div>
+        
+        <div class="px-4 pb-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4" data-i18n="savedCalculationsTitle">Saved Calculations</h3>
+            
+            <div id="savedCalculations" class="space-y-2 max-h-64 overflow-y-auto">
+                <!-- Saved calculations will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Global variables
+        let calculationData = {};
+        let currentLanguage = 'en';
+        let includeLSSO = true;
+
+        // ตรวจสอบว่า script ถูกโหลดแล้ว
+        console.log('Script loaded successfully');
+        
+        // ตรวจสอบว่าฟังก์ชันถูกประกาศแล้วหลังจากโหลด script
+        window.addEventListener('load', function() {
+            if (typeof calculateSalary === 'function') {
+                console.log('calculateSalary function is defined');
+            } else {
+                console.error('calculateSalary function is NOT defined!');
+            }
+        });
+
+        // Translations
+        const translations = {
+            en: {
+                headerTitle: 'Lao PDR Salary Tax',
+                headerSubtitle: 'Calculate LSSO, PIT & Net Salary',
+                noteTitle: 'Note:',
+                noteText: 'Using 2025 tax rules. Verify USD-LAK rate.',
+                quickEnterSalary: 'Enter Salary',
+                quickNetSalary: 'Net Salary',
+                yourNetSalary: 'Your Net Salary',
+                totalGross: 'Gross',
+                totalDeductions: 'Deductions',
+                effectiveRate: 'Tax Rate',
+                mainInputSection: 'Main Information',
+                labelCurrency: 'Currency',
+                salaryLabel: 'Base Salary',
+                salaryLabelLAK: 'Base Salary (LAK)',
+                labelExchange: 'Exchange Rate',
+                labelSalaryType: 'Salary Type',
+                monthly: 'Monthly',
+                annual: 'Annual',
+                allowancesSection: 'Allowances & Benefits',
+                overtime: 'Overtime (OT)',
+                overtimeHelp: 'Extra hours payment',
+                otherAllowances: 'Other Allowances',
+                otherAllowancesHelp: 'Bonus, incentives, etc.',
+                totalAllowances: 'Total Allowances',
+                deductionsOptions: 'Deductions & Options',
+                labelSSO: 'Social Security (LSSO)',
+                yesOption: 'Yes (5.5%)',
+                noOption: 'No (Exempt)',
+                labelPrevTax: 'Previous Tax Paid',
+                prevTaxHelp: 'Deducts from calculated tax',
+                btnCalculate: 'Calculate Net Salary',
+                breakdownTitle: 'Detailed Breakdown',
+                baseSalary: 'Base Salary',
+                baseSalaryCurrency: 'Base Salary',
+                allBenefits: 'All benefits included',
+                grossSalary: 'Gross Salary',
+                beforeDeductions: 'Before any deductions',
+                lssoDeduction: 'LSSO Deduction',
+                taxableIncome: 'Taxable Income',
+                afterLSSO: 'After LSSO',
+                pitTax: 'PIT Tax',
+                netSalary: 'Net Salary',
+                takeHome: 'Take home pay',
+                taxBracketsTitle: 'Tax Brackets Applied',
+                btnExport: 'Export',
+                btnAnnual: 'Annual',
+                btnCompare: 'Compare',
+                btnMore: 'More',
+                btnPrint: 'Print',
+                btnSave: 'Save',
+                navHome: 'Home',
+                navPrint: 'Print',
+                navSave: 'Save',
+                navSaved: 'Saved',
+                annualSummaryTitle: 'Annual Summary',
+                comparisonTitle: 'Compare Salaries',
+                compareSalary1: 'Salary 1',
+                compareSalary2: 'Salary 2',
+                btnCompareAction: 'Compare',
+                moreOptionsTitle: 'More Options',
+                loadSaved: 'Load Saved',
+                btnCancel: 'Cancel',
+                savedCalculationsTitle: 'Saved Calculations',
+                footerText: 'Created by Sinkerd | © 2025',
+                langEN: 'EN',
+                langLO: 'LO'
+            },
+            lo: {
+                headerTitle: 'ภาษีเงินเดือน สปป ลาว',
+                headerSubtitle: 'คำนวณ LSSO, PIT & สุทธิ',
+                noteTitle: 'หมายเหตุ:',
+                noteText: 'ใช้กฎหมายภาษีปี 2025. ตรวจสอบอัตรา USD-LAK.',
+                quickEnterSalary: 'ใส่เงินเดือน',
+                quickNetSalary: 'เงินสุทธิ',
+                yourNetSalary: 'เงินเดือนสุทธิของคุณ',
+                totalGross: 'รวม',
+                totalDeductions: 'หัก',
+                effectiveRate: 'อัตราภาษี',
+                mainInputSection: 'ข้อมูลหลัก',
+                labelCurrency: 'สกุลเงิน',
+                salaryLabel: 'เงินเดือนพื้นฐาน',
+                salaryLabelLAK: 'เงินเดือนพื้นฐาน (กีบ)',
+                labelExchange: 'อัตราแลกเปลี่ยน',
+                labelSalaryType: 'ประเภทเงินเดือน',
+                monthly: 'รายเดือน',
+                annual: 'รายปี',
+                allowancesSection: 'ค่าตอบแทนและสวัสดิการ',
+                overtime: 'ค่าล่วงเวลา (OT)',
+                overtimeHelp: 'ค่าจ้างชั่วโมงพิเศษ',
+                otherAllowances: 'ค่าตอบแทนอื่นๆ',
+                otherAllowancesHelp: 'โบนัส, ค่าตอบแทนพิเศษ ฯลฯ',
+                totalAllowances: 'ค่าตอบแทนรวม',
+                deductionsOptions: 'การหักและตัวเลือก',
+                labelSSO: 'ประกันสังคม (LSSO)',
+                yesOption: 'มี (5.5%)',
+                noOption: 'ไม่มี (ยกเว้น)',
+                labelPrevTax: 'ภาษีที่จ่ายไปแล้ว',
+                prevTaxHelp: 'หักจากภาษีที่คำนวณได้',
+                btnCalculate: 'คำนวณเงินสุทธิ',
+                breakdownTitle: 'รายละเอียดการคำนวณ',
+                baseSalary: 'เงินเดือนพื้นฐาน',
+                baseSalaryCurrency: 'เงินเดือนพื้นฐาน',
+                allBenefits: 'รวมค่าตอบแทนทั้งหมด',
+                grossSalary: 'เงินเดือนรวม',
+                beforeDeductions: 'ก่อนหักค่าใดๆ',
+                lssoDeduction: 'หักประกันสังคม',
+                taxableIncome: 'รายได้ที่เสียภาษี',
+                afterLSSO: 'หลังหัก LSSO',
+                pitTax: 'ภาษีเงินได้',
+                netSalary: 'เงินสุทธิ',
+                takeHome: 'เงินที่ได้รับจริง',
+                taxBracketsTitle: 'ขั้นภาษีที่ใช้',
+                btnExport: 'ส่งออก',
+                btnAnnual: 'รายปี',
+                btnCompare: 'เปรียบเทียบ',
+                btnMore: 'เพิ่มเติม',
+                btnPrint: 'พิมพ์',
+                btnSave: 'บันทึก',
+                navHome: 'หน้าหลัก',
+                navPrint: 'พิมพ์',
+                navSave: 'บันทึก',
+                navSaved: 'ที่บันทึก',
+                annualSummaryTitle: 'สรุปรายปี',
+                comparisonTitle: 'เปรียบเทียบเงินเดือน',
+                compareSalary1: 'เงินเดือน 1',
+                compareSalary2: 'เงินเดือน 2',
+                btnCompareAction: 'เปรียบเทียบ',
+                moreOptionsTitle: 'ตัวเลือกเพิ่มเติม',
+                loadSaved: 'โหลดที่บันทึก',
+                btnCancel: 'ยกเลิก',
+                savedCalculationsTitle: 'การคำนวณที่บันทึก',
+                footerText: 'สร้างโดย Sinkerd | © 2025',
+                langEN: 'EN',
+                langLO: 'LO'
+            }
+        };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                setSocialSecurity(true);
+                updateLanguage();
+                updateTotalAllowances();
+                
+                // Add event listeners for live updates
+                const allowanceInputs = ['overtime', 'otherAllowances'];
+                allowanceInputs.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.addEventListener('input', updateTotalAllowances);
+                    }
+                });
+                
+                const grossSalaryInput = document.getElementById('grossSalary');
+                if (grossSalaryInput) {
+                    grossSalaryInput.addEventListener('input', updateQuickDisplays);
+                }
+            } catch (error) {
+                console.error('Error initializing page:', error);
+            }
+        });
+
+        // Language toggle
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'lo' : 'en';
+            updateLanguage();
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
+        }
+
+        // Update all translations
+        function updateLanguage() {
+            const t = translations[currentLanguage];
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) {
+                    el.innerHTML = t[key];
+                }
+            });
+            
+            const langIcon = document.getElementById('currentLangIcon');
+            const langText = document.getElementById('currentLangText');
+            
+            if (currentLanguage === 'en') {
+                langIcon.textContent = '🇬🇧';
+                langText.textContent = t.langEN;
+            } else {
+                langIcon.textContent = '🇱🇦';
+                langText.textContent = t.langLO;
+            }
+            
+            toggleCurrencyInput();
+            updateQuickDisplays();
+        }
+
+        // Update quick displays
+        function updateQuickDisplays() {
+            const salaryInput = document.getElementById('grossSalary').value;
+            const currencyType = document.getElementById('currencySelector').value;
+            const quickSalaryDisplay = document.getElementById('quickSalaryDisplay');
+            
+            if (salaryInput && parseFloat(salaryInput) > 0) {
+                const value = parseFloat(salaryInput).toLocaleString();
+                quickSalaryDisplay.textContent = currencyType === 'USD' ? '$' + value : value + ' LAK';
+            } else {
+                quickSalaryDisplay.textContent = '$0';
+            }
+        }
+
+        // Toggle currency input
+        function toggleCurrencyInput() {
+            const currencySelector = document.getElementById('currencySelector');
+            const t = translations[currentLanguage];
+            const salaryLabel = document.getElementById('salaryLabel');
+            const salaryInput = document.getElementById('grossSalary');
+            const currencyBadge = document.getElementById('salaryCurrencyBadge');
+            const baseSalaryCurrency = document.getElementById('baseSalaryCurrency');
+            
+            if (currencySelector.value === 'LAK') {
+                salaryLabel.setAttribute('data-i18n', 'salaryLabelLAK');
+                salaryLabel.textContent = t.salaryLabelLAK;
+                currencyBadge.textContent = 'LAK';
+                currencyBadge.className = 'currency-badge lak';
+                baseSalaryCurrency.textContent = 'LAK';
+            } else {
+                salaryLabel.setAttribute('data-i18n', 'salaryLabel');
+                salaryLabel.textContent = t.salaryLabel;
+                currencyBadge.textContent = 'USD';
+                currencyBadge.className = 'currency-badge usd';
+                baseSalaryCurrency.textContent = 'USD';
+            }
+            
+            updateQuickDisplays();
+        }
+
+        // Set social security option
+        function setSocialSecurity(value) {
+            includeLSSO = value;
+            
+            const yesBtn = document.getElementById('ssoYes');
+            const noBtn = document.getElementById('ssoNo');
+            
+            if (value) {
+                yesBtn.classList.add('active');
+                yesBtn.classList.remove('inactive');
+                noBtn.classList.add('inactive');
+                noBtn.classList.remove('active');
+            } else {
+                yesBtn.classList.remove('active');
+                yesBtn.classList.add('inactive');
+                noBtn.classList.remove('inactive');
+                noBtn.classList.add('active');
+            }
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(5);
+            }
+        }
+
+        // Update total allowances
+        function updateTotalAllowances() {
+            const ot = parseFloat(document.getElementById('overtime').value) || 0;
+            const other = parseFloat(document.getElementById('otherAllowances').value) || 0;
+            
+            const total = ot + other;
+            document.getElementById('totalAllowancesDisplay').textContent = formatNumber(total) + ' LAK';
+        }
+
+        // Format number with commas
+        function formatNumber(num) {
+            return new Intl.NumberFormat('en-US').format(Math.round(num));
+        }
+
+        // Calculate LSSO
+        function calculateLSSO(grossLAK, includeLSSO) {
+            if (!includeLSSO) return 0;
+            
+            const lssoRate = 0.055;
+            const lssoCap = 4500000;
+            
+            const lssoBase = Math.min(grossLAK, lssoCap);
+            return lssoBase * lssoRate;
+        }
+
+        // Calculate PIT tax
+        function calculatePIT(taxableIncome) {
+            const brackets = [
+                { min: 0, max: 1300000, rate: 0 },
+                { min: 1300001, max: 5000000, rate: 0.05 },
+                { min: 5000001, max: 15000000, rate: 0.10 },
+                { min: 15000001, max: 25000000, rate: 0.15 },
+                { min: 25000001, max: 65000000, rate: 0.20 },
+                { min: 65000001, max: Infinity, rate: 0.25 }
+            ];
+            
+            let totalTax = 0;
+            let taxDetails = [];
+            
+            for (let bracket of brackets) {
+                if (taxableIncome > bracket.min) {
+                    const taxableInThisBracket = Math.min(taxableIncome, bracket.max) - bracket.min + 1;
+                    const taxInThisBracket = taxableInThisBracket * bracket.rate;
+                    
+                    if (taxInThisBracket > 0) {
+                        totalTax += taxInThisBracket;
+                        taxDetails.push({
+                            range: `${formatNumber(bracket.min)} - ${bracket.max === Infinity ? '∞' : formatNumber(bracket.max)}`,
+                            rate: (bracket.rate * 100) + '%',
+                            tax: taxInThisBracket
+                        });
+                    }
+                }
+            }
+            
+            return { totalTax, taxDetails };
+        }
+
+        // Main calculation function
+        function calculateSalary() {
+            try {
+                const salaryInput = parseFloat(document.getElementById('grossSalary').value);
+                const currencyType = document.getElementById('currencySelector').value;
+                const exchangeRate = parseFloat(document.getElementById('exchangeRate').value);
+                const salaryType = document.getElementById('salaryType').value;
+            
+            // Get all allowances
+            const overtime = parseFloat(document.getElementById('overtime').value) || 0;
+            const otherAllowances = parseFloat(document.getElementById('otherAllowances').value) || 0;
+            
+            const previousTaxLAK = parseFloat(document.getElementById('previousTax').value) || 0;
+            
+            if (!salaryInput || !exchangeRate || salaryInput <= 0 || exchangeRate <= 0) {
+                alert(currentLanguage === 'en' ? 'Please enter your base salary' : 'กรุณาใส่เงินเดือนพื้นฐาน');
+                return;
+            }
+            
+            // Convert salary to LAK
+            let monthlySalaryLAK;
+            if (currencyType === 'USD') {
+                monthlySalaryLAK = salaryType === 'annual' ? (salaryInput / 12) * exchangeRate : salaryInput * exchangeRate;
+            } else {
+                monthlySalaryLAK = salaryType === 'annual' ? salaryInput / 12 : salaryInput;
+            }
+            
+            // Calculate total allowances (all are in LAK)
+            const totalAllowances = overtime + otherAllowances;
+            
+            // Total gross salary including all allowances
+            const totalGrossLAK = monthlySalaryLAK + totalAllowances;
+            
+            // Calculate LSSO
+            const lssoAmount = calculateLSSO(totalGrossLAK, includeLSSO);
+            
+            // Calculate taxable income
+            const taxableIncome = Math.max(0, totalGrossLAK - lssoAmount);
+            
+            // Calculate PIT
+            const pitResult = calculatePIT(taxableIncome);
+            let pitAmount = pitResult.totalTax;
+            pitAmount = Math.max(0, pitAmount - (previousTaxLAK / 12));
+            
+            // Calculate net salary
+            const netLAK = totalGrossLAK - lssoAmount - pitAmount;
+            const netUSD = netLAK / exchangeRate;
+            
+            // Calculate totals
+            const totalDeductions = lssoAmount + pitAmount;
+            const effectiveRate = (totalDeductions / totalGrossLAK) * 100;
+            
+            // Store calculation data
+            calculationData = {
+                inputCurrency: currencyType,
+                inputAmount: salaryInput,
+                salaryType,
+                exchangeRate,
+                allowances: {
+                    overtime: overtime,
+                    other: otherAllowances,
+                    total: totalAllowances
+                },
+                includeLSSO,
+                previousTaxLAK,
+                monthlySalaryLAK,
+                totalGrossLAK,
+                lssoAmount,
+                taxableIncome,
+                pitAmount,
+                netLAK,
+                netUSD,
+                effectiveRate,
+                taxDetails: pitResult.taxDetails
+            };
+            
+            // Update all displays
+            updateDisplays();
+            
+            // Show results
+            const results = document.getElementById('results');
+            results.classList.remove('hidden');
+            results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            if (navigator.vibrate) {
+                navigator.vibrate([10, 20, 10]);
+            }
+            } catch (error) {
+                console.error('Error in calculateSalary:', error);
+                alert(currentLanguage === 'en' ? 'An error occurred during calculation. Please check the console for details.' : 'เกิดข้อผิดพลาดในการคำนวณ กรุณาตรวจสอบ console สำหรับรายละเอียด');
+            }
+        }
+
+        // Update all display elements
+        function updateDisplays() {
+            const data = calculationData;
+            
+            // Net salary highlight
+            document.getElementById('netSalaryHighlight').textContent = formatNumber(data.netLAK) + ' LAK';
+            document.getElementById('netSalaryUSD').textContent = '$' + data.netUSD.toFixed(2) + ' USD';
+            
+            // Summary stats
+            document.getElementById('totalGrossDisplay').textContent = formatNumber(data.totalGrossLAK) + ' LAK';
+            document.getElementById('totalDeductionsDisplay').textContent = formatNumber(data.lssoAmount + data.pitAmount) + ' LAK';
+            document.getElementById('effectiveRateDisplay').textContent = data.effectiveRate.toFixed(1) + '%';
+            
+            // Quick displays
+            document.getElementById('quickNetDisplay').textContent = formatNumber(data.netLAK) + ' LAK';
+            updateQuickDisplays();
+            
+            // Breakdown
+            document.getElementById('baseSalaryDisplay').textContent = data.inputCurrency === 'USD' ? 
+                '$' + data.inputAmount.toLocaleString() : formatNumber(data.inputAmount) + ' LAK';
+            document.getElementById('breakdownAllowancesDisplay').textContent = formatNumber(data.allowances.total) + ' LAK';
+            document.getElementById('grossSalaryDisplay').textContent = formatNumber(data.totalGrossLAK) + ' LAK';
+            document.getElementById('lssoAmountDisplay').textContent = '-' + formatNumber(data.lssoAmount) + ' LAK';
+            document.getElementById('taxableIncomeDisplay').textContent = formatNumber(data.taxableIncome) + ' LAK';
+            document.getElementById('pitAmountDisplay').textContent = '-' + formatNumber(data.pitAmount) + ' LAK';
+            document.getElementById('netSalaryDisplay').textContent = formatNumber(data.netLAK) + ' LAK';
+            document.getElementById('netSalaryUSDDisplay').textContent = '$' + data.netUSD.toFixed(2) + ' USD';
+            
+            // Tax brackets
+            const taxBracketDetails = document.getElementById('taxBracketDetails');
+            taxBracketDetails.innerHTML = '';
+            
+            if (data.taxDetails && data.taxDetails.length > 0) {
+                data.taxDetails.forEach(detail => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center justify-between py-2 px-3 bg-gray-50 rounded-xl';
+                    div.innerHTML = `
+                        <div>
+                            <p class="text-xs text-gray-500">${detail.range} LAK</p>
+                            <p class="text-sm font-medium text-gray-700">${detail.rate}</p>
+                        </div>
+                        <p class="text-sm font-semibold text-orange-600 number-display">-${formatNumber(detail.tax)} LAK</p>
+                    `;
+                    taxBracketDetails.appendChild(div);
+                });
+            } else {
+                taxBracketDetails.innerHTML = '<p class="text-sm text-gray-500 text-center py-2">No tax applicable</p>';
+            }
+        }
+
+        // Scroll to results
+        function scrollToResults() {
+            const results = document.getElementById('results');
+            if (results.classList.contains('hidden')) {
+                alert(currentLanguage === 'en' ? 'Please calculate first' : 'กรุณาคำนวณก่อน');
+                return;
+            }
+            results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Focus salary input
+        function focusSalaryInput() {
+            document.getElementById('grossSalary').focus();
+        }
+
+        // Scroll to top
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(5);
+            }
+        }
+
+        // Show more options
+        function showMoreOptions() {
+            document.getElementById('bottomSheetOverlay').classList.add('active');
+            document.getElementById('moreOptionsSheet').classList.add('active');
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(5);
+            }
+        }
+
+        // Close all modals
+        function closeAllModals() {
+            document.getElementById('bottomSheetOverlay').classList.remove('active');
+            document.getElementById('moreOptionsSheet').classList.remove('active');
+            document.getElementById('savedModalOverlay').classList.remove('active');
+            document.getElementById('savedModal').classList.remove('active');
+        }
+
+        // Close annual summary
+        function closeAnnualSummary() {
+            document.getElementById('annualSummary').classList.add('hidden');
+        }
+
+        // Close comparison
+        function closeComparison() {
+            document.getElementById('comparisonTool').classList.add('hidden');
+        }
+
+        // Calculate annual summary
+        function calculateAnnualSummary() {
+            if (!calculationData.totalGrossLAK) {
+                alert(currentLanguage === 'en' ? 'Please calculate first' : 'กรุณาคำนวณก่อน');
+                return;
+            }
+            
+            const annualGross = calculationData.totalGrossLAK * 12;
+            const annualLSSO = calculationData.lssoAmount * 12;
+            const annualPIT = calculationData.pitAmount * 12;
+            const annualNet = calculationData.netLAK * 12;
+            
+            const annualBreakdown = document.getElementById('annualBreakdown');
+            annualBreakdown.innerHTML = `
+                <div class="space-y-2">
+                    <div class="flex justify-between py-2 px-3 bg-gray-50 rounded-xl">
+                        <span class="text-sm text-gray-600">Annual Gross</span>
+                        <span class="text-sm font-semibold">${formatNumber(annualGross)} LAK</span>
+                    </div>
+                    <div class="flex justify-between py-2 px-3 bg-red-50 rounded-xl">
+                        <span class="text-sm text-gray-600">Annual LSSO</span>
+                        <span class="text-sm font-semibold text-red-600">-${formatNumber(annualLSSO)} LAK</span>
+                    </div>
+                    <div class="flex justify-between py-2 px-3 bg-orange-50 rounded-xl">
+                        <span class="text-sm text-gray-600">Annual PIT</span>
+                        <span class="text-sm font-semibold text-orange-600">-${formatNumber(annualPIT)} LAK</span>
+                    </div>
+                    <div class="flex justify-between py-3 px-3 bg-gradient-to-r from-primary-50 to-primary-100 rounded-xl">
+                        <span class="text-sm font-bold text-gray-900">Annual Net</span>
+                        <span class="text-sm font-bold text-primary-600">${formatNumber(annualNet)} LAK</span>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('annualSummary').classList.remove('hidden');
+            document.getElementById('comparisonTool').classList.add('hidden');
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
+        }
+
+        // Compare salaries
+        function compareSalaries() {
+            const comparisonTool = document.getElementById('comparisonTool');
+            const annualSummary = document.getElementById('annualSummary');
+            
+            if (comparisonTool.classList.contains('hidden')) {
+                comparisonTool.classList.remove('hidden');
+                annualSummary.classList.add('hidden');
+            } else {
+                comparisonTool.classList.add('hidden');
+            }
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
+        }
+
+        // Run comparison
+        function runComparison() {
+            const salary1 = parseFloat(document.getElementById('compareSalary1').value);
+            const salary2 = parseFloat(document.getElementById('compareSalary2').value);
+            
+            if (!salary1 || !salary2) {
+                alert(currentLanguage === 'en' ? 'Enter both salaries' : 'ใส่เงินเดือนทั้งสอง');
+                return;
+            }
+            
+            const exchangeRate = calculationData.exchangeRate || 21630;
+            const currencyType = calculationData.inputCurrency || 'USD';
+            
+            const salary1LAK = currencyType === 'USD' ? salary1 * exchangeRate : salary1;
+            const salary2LAK = currencyType === 'USD' ? salary2 * exchangeRate : salary2;
+            
+            const calc1 = quickCalculate(salary1LAK);
+            const calc2 = quickCalculate(salary2LAK);
+            
+            const difference = Math.abs(calc2.net - calc1.net);
+            const percentage = (difference / Math.min(calc1.net, calc2.net) * 100).toFixed(1);
+            const higher = calc2.net > calc1.net ? '2' : '1';
+            
+            const comparisonResults = document.getElementById('comparisonResults');
+            comparisonResults.innerHTML = `
+                <div class="mt-4 p-4 bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl">
+                    <p class="text-sm font-semibold text-primary-800">Net Difference: ${formatNumber(difference)} LAK</p>
+                    <p class="text-sm ${calc2.net > calc1.net ? 'text-green-600' : 'text-red-600'} mt-1">
+                        Salary ${higher} is higher by ${percentage}%
+                    </p>
+                </div>
+            `;
+        }
+
+        // Quick calculate for comparison
+        function quickCalculate(grossLAK) {
+            const lsso = calculateLSSO(grossLAK, true);
+            const taxable = grossLAK - lsso;
+            const pit = calculatePIT(taxable).totalTax;
+            const net = grossLAK - lsso - pit;
+            const effectiveRate = ((lsso + pit) / grossLAK) * 100;
+            
+            return { net, effectiveRate };
+        }
+
+        // Export to Excel
+        function exportToExcel() {
+            if (!calculationData.totalGrossLAK) {
+                alert(currentLanguage === 'en' ? 'Please calculate first' : 'กรุณาคำนวณก่อน');
+                return;
+            }
+            
+            const wb = XLSX.utils.book_new();
+            
+            const summaryData = [
+                ['Lao PDR Salary Tax Calculator'],
+                ['Generated: ' + new Date().toLocaleDateString()],
+                [''],
+                ['INPUT DETAILS'],
+                ['Currency', calculationData.inputCurrency],
+                ['Base Salary', calculationData.inputAmount],
+                ['Salary Type', calculationData.salaryType],
+                ['Exchange Rate', calculationData.exchangeRate],
+                ['LSSO Applied', calculationData.includeLSSO ? 'Yes' : 'No'],
+                [''],
+                ['ALLOWANCES'],
+                ['Overtime (OT)', calculationData.allowances.overtime],
+                ['Other Allowances', calculationData.allowances.other],
+                ['Total Allowances', calculationData.allowances.total],
+                [''],
+                ['RESULTS (LAK)'],
+                ['Gross Salary', calculationData.totalGrossLAK],
+                ['LSSO Deduction', calculationData.lssoAmount],
+                ['Taxable Income', calculationData.taxableIncome],
+                ['PIT Tax', calculationData.pitAmount],
+                ['Net Salary (LAK)', calculationData.netLAK],
+                ['Net Salary (USD)', calculationData.netUSD.toFixed(2)],
+                ['Effective Rate', calculationData.effectiveRate.toFixed(2) + '%']
+            ];
+            
+            const ws = XLSX.utils.aoa_to_sheet(summaryData);
+            XLSX.utils.book_append_sheet(wb, ws, 'Summary');
+            
+            const today = new Date();
+            const filename = `Lao_Salary_${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}.xlsx`;
+            
+            XLSX.writeFile(wb, filename);
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(20);
+            }
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-4 py-2 rounded-full text-sm shadow-lg z-50 animate-fade-in';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('animate-slide-up');
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+        // Save calculation
+        function saveCalculation() {
+            if (!calculationData.totalGrossLAK) {
+                alert(currentLanguage === 'en' ? 'Please calculate first' : 'กรุณาคำนวณก่อน');
+                return;
+            }
+            
+            const savedCalculations = JSON.parse(localStorage.getItem('laoSalaryCalculations') || '[]');
+            const calculation = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString(),
+                ...calculationData
+            };
+            
+            savedCalculations.unshift(calculation);
+            if (savedCalculations.length > 20) {
+                savedCalculations.pop();
+            }
+            
+            localStorage.setItem('laoSalaryCalculations', JSON.stringify(savedCalculations));
+            showToast(currentLanguage === 'en' ? 'Saved!' : 'บันทึกแล้ว!');
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(30);
+            }
+        }
+
+        // Load saved calculations
+        function loadSavedCalculations() {
+            const savedCalculations = JSON.parse(localStorage.getItem('laoSalaryCalculations') || '[]');
+            
+            if (savedCalculations.length === 0) {
+                alert(currentLanguage === 'en' ? 'No saved calculations' : 'ไม่มีการคำนวณที่บันทึก');
+                return;
+            }
+            
+            const savedDiv = document.getElementById('savedCalculations');
+            savedDiv.innerHTML = '';
+            
+            savedCalculations.forEach((calc, index) => {
+                const div = document.createElement('div');
+                div.className = 'p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer';
+                div.onclick = () => loadCalculation(index);
+                div.innerHTML = `
+                    <p class="text-sm font-semibold text-gray-900">${calc.date}</p>
+                    <p class="text-xs text-gray-500">${calc.inputCurrency} ${calc.inputAmount} → ${formatNumber(calc.netLAK)} LAK</p>
+                `;
+                savedDiv.appendChild(div);
+            });
+            
+            document.getElementById('savedModalOverlay').classList.add('active');
+            document.getElementById('savedModal').classList.add('active');
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
+        }
+
+        // Close saved modal
+        function closeSavedModal() {
+            document.getElementById('savedModalOverlay').classList.remove('active');
+            document.getElementById('savedModal').classList.remove('active');
+        }
+
+        // Load specific calculation
+        function loadCalculation(index) {
+            const savedCalculations = JSON.parse(localStorage.getItem('laoSalaryCalculations') || '[]');
+            const calc = savedCalculations[index];
+            
+            document.getElementById('currencySelector').value = calc.inputCurrency;
+            document.getElementById('grossSalary').value = calc.inputAmount;
+            document.getElementById('exchangeRate').value = calc.exchangeRate;
+            document.getElementById('salaryType').value = calc.salaryType;
+            
+            // Load allowances
+            if (calc.allowances) {
+                document.getElementById('overtime').value = calc.allowances.overtime || 0;
+                document.getElementById('otherAllowances').value = calc.allowances.other || 0;
+                updateTotalAllowances();
+            }
+            
+            document.getElementById('previousTax').value = calc.previousTaxLAK || 0;
+            setSocialSecurity(calc.includeLSSO);
+            
+            closeSavedModal();
+            toggleCurrencyInput();
+            calculateSalary();
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(20);
+            }
+        }
+
+    </script>
+</body>
+</html>
