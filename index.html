@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
     <meta name="theme-color" content="#4caf50">
     <meta name="description" content="Lao PDR Salary Tax Calculator - Calculate LSSO, PIT, and Net Salary">
     <title>Lao PDR Salary Tax Calculator</title>
@@ -62,9 +64,14 @@
         }
     </script>
     <style>
+        /* ป้องกันการ highlight และ callout แต่ยังให้ input ทำงานได้ */
         * {
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
+        }
+        
+        /* ใช้ user-select: none เฉพาะกับ element ที่ไม่ใช่ input */
+        body, div, span, p, h1, h2, h3, h4, h5, h6, button, label {
             -webkit-user-select: none;
             user-select: none;
         }
@@ -77,6 +84,9 @@
             padding: 0;
             min-height: 100vh;
             padding-bottom: 0;
+            /* ป้องกันการ scroll bounce บน iOS */
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
         }
         
         /* ใช้ฟอนต์ Noto Sans Lao สำหรับภาษาลาว - ครอบคลุมทุกองค์ประกอบ */
@@ -132,13 +142,38 @@
             font-family: 'Noto Sans Lao', 'Inter', system-ui, -apple-system, sans-serif !important;
         }
         
+        /* อนุญาตให้ input, textarea, select เลือกข้อความได้ - สำคัญสำหรับ mobile */
         input, textarea, select {
-            -webkit-user-select: text;
-            user-select: text;
+            -webkit-user-select: text !important;
+            user-select: text !important;
+            /* ป้องกัน iOS zoom เมื่อ focus input */
+            font-size: 16px !important;
+            /* เปิดใช้งาน touch events */
+            touch-action: manipulation;
+            /* ป้องกัน double-tap zoom */
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
         }
         
+        /* Mobile input - ป้องกัน zoom และปรับปรุงการใช้งาน */
         .mobile-input {
-            font-size: 16px;
+            font-size: 16px !important;
+            /* ป้องกัน iOS zoom */
+            -webkit-appearance: none;
+            appearance: none;
+            /* เปิดใช้งาน touch */
+            touch-action: manipulation;
+            /* ปรับปรุงการแสดงผลบน mobile */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* ปรับปรุง input field สำหรับ mobile */
+        .input-field {
+            /* เปิดใช้งาน touch events */
+            touch-action: manipulation;
+            /* ป้องกัน text selection ที่ไม่ต้องการ */
+            -webkit-user-select: text;
+            user-select: text;
         }
         
         .section-card {
@@ -368,6 +403,31 @@
         
         .group label svg {
             transition: all 0.2s ease;
+        }
+        
+        /* Mobile Touch Improvements - ปรับปรุงการทำงานบน mobile */
+        button, a, .btn-primary, .toggle-option, .section-card {
+            /* เปิดใช้งาน touch events */
+            touch-action: manipulation;
+            /* ป้องกัน double-tap zoom */
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+            /* ปรับปรุงการตอบสนอง */
+            cursor: pointer;
+        }
+        
+        /* ป้องกัน text selection บน button และ interactive elements */
+        button, .btn-primary, .toggle-option {
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        /* ปรับปรุงการแสดงผลบน mobile browsers */
+        @supports (-webkit-touch-callout: none) {
+            /* iOS specific fixes */
+            input, textarea, select {
+                -webkit-appearance: none;
+                border-radius: 0.5rem;
+            }
         }
         
         /* Mobile Responsive Styles */
