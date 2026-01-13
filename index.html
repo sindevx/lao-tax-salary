@@ -1199,23 +1199,6 @@
                             </button>
                         </div>
                     </div>
-                    
-                    <!-- Previous Tax Paid -->
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-2" data-i18n="labelPrevTax">Previous Tax Paid</label>
-                        <div class="relative">
-                            <input 
-                                type="number" 
-                                id="previousTax" 
-                                value="0" 
-                                placeholder="0"
-                                inputmode="decimal"
-                                class="mobile-input w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500"
-                            >
-                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">ກີບ</span>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1" data-i18n="prevTaxHelp">Deducts from calculated tax</p>
-                    </div>
                 </div>
             </div>
 
@@ -1741,12 +1724,12 @@
             },
 lo: {
                 headerTitle: 'ພາສີເງິນເດືອນ ສປປ ລາວ',
-                headerSubtitle: 'ຄຳນວນ LSSO, PIT & ເງິນສຸດທິ',
+                headerSubtitle: 'ຄຳນວນ ຄ່າປະກັນສັງຄົມ, ອາກອນເງິນເດືອນ & ເງິນທີ່ໄດ້ຮັບຕົວຈິງ',
                 noteTitle: 'ໝາຍເຫດ:',
                 noteText: 'ອີງຕາມກົດໝາຍສ່ວຍສາອາກອນປີ 2025. ກະລຸນາກວດສອບອັດຕາແລກປ່ຽນ USD-LAK.',
                 quickEnterSalary: 'ປ້ອນເງິນເດືອນ',
-                quickNetSalary: 'ເງິນສຸດທິ',
-                yourNetSalary: 'ເງິນເດືອນສຸດທິຂອງທ່ານ',
+                quickNetSalary: 'ເງິນໄດ້ຮັບຕົວຈິງ',
+                yourNetSalary: 'ເງິນໄດ້ຮັບຕົວຈິງຂອງທ່ານ',
                 totalGross: 'ລວມທັງໝົດ',
                 totalDeductions: 'ລາຍການຫັກ',
                 effectiveRate: 'ອັດຕາອາກອນຕົວຈິງ',
@@ -1766,7 +1749,7 @@ lo: {
                 sameAsSalary: 'ຄືກັບເງິນເດືອນ',
                 differentCurrency: 'ກີບເທົ່ານັ້ນ',
                 overtime: 'ຄ່າລ່ວງເວລາ (OT)',
-                overtimeHelp: 'ຄ່າຈ້າງຊົ່ວໂມງພິເສດ',
+                overtimeHelp: 'ເງິນເຮັດວຽກລ່ວງເວລາ',
                 otherAllowances: 'ເງິນອຸດໜູນອື່ນໆ',
                 otherAllowancesHelp: 'ໂບນັດ, ຄ່າຕຳແໜ່ງ, ເງິນອຸດໜູນພິເສດ ຯລຯ',
                 totalAllowances: 'ລວມເງິນອຸດໜູນ',
@@ -1785,7 +1768,7 @@ lo: {
                 beforeDeductions: 'ກ່ອນຫັກລາຍການຕ່າງໆ',
                 lssoDeduction: 'ຫັກປະກັນສັງຄົມ',
                 taxableIncome: 'ລາຍໄດ້ທີ່ຕ້ອງເສຍອາກອນ',
-                afterLSSO: 'ຫຼັງຫັກ LSSO',
+                afterLSSO: 'ຫຼັງຫັກ ປະກັນສັງຄົມ',
                 pitTax: 'ອາກອນລາຍໄດ້',
                 netSalary: 'ເງິນສຸດທິ',
                 takeHome: 'ເງິນທີ່ໄດ້ຮັບຕົວຈິງ',
@@ -1975,20 +1958,6 @@ lo: {
                 return false;
             }
             
-            // Validate Previous Tax (optional, but must be >= 0)
-            const previousTaxInput = document.getElementById('previousTax');
-            const previousTax = parseFloat(previousTaxInput?.value || '') || 0;
-            
-            if (previousTax < 0) {
-                showValidationModal(t.validationError, t.validationPreviousTaxInvalid);
-                if (previousTaxInput) {
-                    previousTaxInput.focus();
-                    previousTaxInput.classList.add('border-red-500');
-                    setTimeout(() => previousTaxInput.classList.remove('border-red-500'), 3000);
-                }
-                return false;
-            }
-            
             return true;
         }
         
@@ -2110,11 +2079,6 @@ lo: {
                         updateTotalAllowances();
                         hideResults();
                     });
-                }
-                
-                const previousTaxInput = document.getElementById('previousTax');
-                if (previousTaxInput) {
-                    previousTaxInput.addEventListener('input', hideResults);
                 }
                 
                 // เพิ่ม event listeners เพื่อติดตาม user interaction สำหรับ vibrate
@@ -2648,8 +2612,6 @@ lo: {
             const overtime = parseFloat(document.getElementById('overtime').value) || 0;
             const otherAllowances = parseFloat(document.getElementById('otherAllowances').value) || 0;
             
-            const previousTaxLAK = parseFloat(document.getElementById('previousTax').value) || 0;
-            
             // Convert salary to LAK
             let monthlySalaryLAK;
             if (currencyType === 'USD') {
@@ -2687,8 +2649,7 @@ lo: {
             
             // Calculate PIT
             const pitResult = calculatePIT(taxableIncome);
-            let pitAmount = pitResult.totalTax;
-            pitAmount = Math.max(0, pitAmount - (previousTaxLAK / 12));
+            const pitAmount = pitResult.totalTax;
             
             // Calculate net salary
             const netLAK = totalGrossLAK - lssoAmount - pitAmount;
@@ -2711,7 +2672,6 @@ lo: {
                     sameCurrencyAsSalary: allowanceSameCurrencyAsSalary
                 },
                 includeLSSO,
-                previousTaxLAK,
                 monthlySalaryLAK,
                 totalGrossLAK,
                 lssoAmount,
@@ -3133,7 +3093,6 @@ lo: {
                 updateTotalAllowances();
             }
             
-            document.getElementById('previousTax').value = calc.previousTaxLAK || 0;
             setSocialSecurity(calc.includeLSSO);
             
             closeSavedModal();
