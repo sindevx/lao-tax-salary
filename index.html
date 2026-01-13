@@ -854,20 +854,34 @@
         .modal {
             display: none;
             position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
             background: white;
-            border-radius: 24px 24px 0 0;
+            border-radius: 24px;
             z-index: 50;
-            max-height: 70vh;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
+            max-width: 90%;
+            max-height: 80vh;
+            width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            overflow-y: auto;
         }
         
         .modal.active {
             display: block;
-            transform: translateY(0);
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+        
+        /* สำหรับ mobile - ปรับขนาดและ padding */
+        @media (max-width: 640px) {
+            .modal {
+                width: calc(100% - 2rem);
+                max-width: calc(100% - 2rem);
+                max-height: 85vh;
+            }
         }
     </style>
 </head>
@@ -1564,6 +1578,31 @@
         </div>
     </div>
 
+    <!-- Validation Modal Overlay -->
+    <div class="modal-overlay" id="validationModalOverlay" onclick="closeValidationModal()"></div>
+
+    <!-- Validation Modal -->
+    <div class="modal" id="validationModal">
+        <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mt-3 mb-4"></div>
+        
+        <div class="px-4 pb-6">
+            <div class="flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2 text-center" id="validationModalTitle">Validation Error</h3>
+            <p class="text-sm text-gray-600 mb-6 text-center" id="validationModalMessage">Please check your input</p>
+            <button 
+                onclick="closeValidationModal()" 
+                class="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-lg shadow-primary-500/25"
+                id="validationModalButton"
+            >
+                OK
+            </button>
+        </div>
+    </div>
+
     <!-- Saved Modal Overlay -->
     <div class="modal-overlay" id="savedModalOverlay" onclick="closeSavedModal()"></div>
 
@@ -1682,7 +1721,23 @@
                 savedCalculationsTitle: 'Saved Calculations',
                 footerText: 'Created by Sinkerd | © 2025',
                 langEN: 'EN',
-                langLO: 'LO'
+                langLO: 'LO',
+                // Validation messages
+                validationError: 'Validation Error',
+                validationSalaryRequired: 'Please enter your base salary',
+                validationSalaryInvalid: 'Base salary must be greater than 0',
+                validationExchangeRateRequired: 'Please enter the exchange rate',
+                validationExchangeRateInvalid: 'Exchange rate must be greater than 0',
+                validationExchangeRateRange: 'Exchange rate should be between 1 and 1,000,000',
+                validationOvertimeInvalid: 'Overtime amount must be 0 or greater',
+                validationOtherAllowancesInvalid: 'Other allowances amount must be 0 or greater',
+                validationPreviousTaxInvalid: 'Previous tax paid must be 0 or greater',
+                validationCalculationError: 'Calculation Error',
+                validationCalculationFailed: 'An error occurred during calculation. Please check your inputs and try again.',
+                validationPleaseCalculateFirst: 'Please calculate first',
+                validationNoSavedCalculations: 'No saved calculations',
+                btnOK: 'OK',
+                btnClose: 'Close'
             },
 lo: {
                 headerTitle: 'ພາສີເງິນເດືອນ ສປປ ລາວ',
@@ -1721,7 +1776,7 @@ lo: {
                 noOption: 'ບໍ່ມີ (ຍົກເວັ້ນ)',
                 labelPrevTax: 'ອາກອນທີ່ຈ່າຍແລ້ວ',
                 prevTaxHelp: 'ຫັກອອກຈາກອາກອນທີ່ຄຳນວນໄດ້',
-                btnCalculate: 'ຄຳນວນເງິນສຸດທິ',
+                btnCalculate: 'ດຳເນີນການຄິດໄລ່',
                 breakdownTitle: 'ລາຍລະອຽດການຄຳນວນ',
                 baseSalary: 'ເງິນເດືອນພື້ນຖານ',
                 baseSalaryCurrency: 'ເງິນເດືອນພື້ນຖານ',
@@ -1763,7 +1818,23 @@ lo: {
                 savedCalculationsTitle: 'ປະຫວັດການຄຳນວນ',
                 footerText: 'ສ້າງໂດຍ Sinkerd | © 2025',
                 langEN: 'EN',
-                langLO: 'LO'
+                langLO: 'LO',
+                // Validation messages
+                validationError: 'ຂໍ້ຜິດພາດການກວດສອບ',
+                validationSalaryRequired: 'ກະລຸນາປ້ອນເງິນເດືອນພື້ນຖານ',
+                validationSalaryInvalid: 'ເງິນເດືອນພື້ນຖານຕ້ອງມີຄ່າຫຼາຍກວ່າ 0',
+                validationExchangeRateRequired: 'ກະລຸນາປ້ອນອັດຕາແລກປ່ຽນ',
+                validationExchangeRateInvalid: 'ອັດຕາແລກປ່ຽນຕ້ອງມີຄ່າຫຼາຍກວ່າ 0',
+                validationExchangeRateRange: 'ອັດຕາແລກປ່ຽນຄວນຢູ່ລະຫວ່າງ 1 ແລະ 1,000,000',
+                validationOvertimeInvalid: 'ຈຳນວນຄ່າລ່ວງເວລາຕ້ອງເປັນ 0 ຫຼືຫຼາຍກວ່າ',
+                validationOtherAllowancesInvalid: 'ຈຳນວນເງິນອຸດໜູນອື່ນໆຕ້ອງເປັນ 0 ຫຼືຫຼາຍກວ່າ',
+                validationPreviousTaxInvalid: 'ອາກອນທີ່ຈ່າຍແລ້ວຕ້ອງເປັນ 0 ຫຼືຫຼາຍກວ່າ',
+                validationCalculationError: 'ຂໍ້ຜິດພາດການຄຳນວນ',
+                validationCalculationFailed: 'ເກີດຂໍ້ຜິດພາດໃນການຄຳນວນ. ກະລຸນາກວດສອບຂໍ້ມູນຂອງທ່ານແລະລອງອີກຄັ້ງ.',
+                validationPleaseCalculateFirst: 'ກະລຸນາຄຳນວນກ່ອນ',
+                validationNoSavedCalculations: 'ບໍ່ມີການຄຳນວນທີ່ບັນທຶກ',
+                btnOK: 'ຕົກລົງ',
+                btnClose: 'ປິດ'
             }
         };
 
@@ -1779,6 +1850,146 @@ lo: {
                     }
                 }, 300);
             }
+        }
+        
+        // ฟังก์ชันแสดง validation modal
+        function showValidationModal(title, message) {
+            const t = translations[currentLanguage];
+            const modal = document.getElementById('validationModal');
+            const overlay = document.getElementById('validationModalOverlay');
+            const titleEl = document.getElementById('validationModalTitle');
+            const messageEl = document.getElementById('validationModalMessage');
+            const buttonEl = document.getElementById('validationModalButton');
+            
+            if (titleEl) {
+                titleEl.textContent = title || t.validationError;
+                // เพิ่ม class lao-currency-text สำหรับข้อความภาษาลาวเสมอ
+                titleEl.classList.add('lao-currency-text');
+            }
+            if (messageEl) {
+                messageEl.textContent = message || t.validationCalculationFailed;
+                // เพิ่ม class lao-currency-text สำหรับข้อความภาษาลาวเสมอ
+                messageEl.classList.add('lao-currency-text');
+            }
+            if (buttonEl) {
+                buttonEl.textContent = t.btnOK;
+                // เพิ่ม class lao-currency-text สำหรับข้อความภาษาลาวเสมอ
+                buttonEl.classList.add('lao-currency-text');
+            }
+            
+            if (modal && overlay) {
+                overlay.classList.add('active');
+                modal.classList.add('active');
+                safeVibrate([10, 20, 10]);
+            }
+        }
+        
+        // ฟังก์ชันปิด validation modal
+        function closeValidationModal() {
+            const modal = document.getElementById('validationModal');
+            const overlay = document.getElementById('validationModalOverlay');
+            
+            if (modal && overlay) {
+                modal.classList.remove('active');
+                overlay.classList.remove('active');
+            }
+        }
+        
+        // ฟังก์ชัน validation ข้อมูลทั้งหมด
+        function validateInputs() {
+            const t = translations[currentLanguage];
+            
+            // Validate Base Salary
+            const salaryInput = document.getElementById('grossSalary');
+            const salaryValue = parseFormattedNumber(salaryInput?.value || '');
+            
+            if (!salaryInput || !salaryInput.value || salaryValue <= 0) {
+                showValidationModal(t.validationError, t.validationSalaryRequired);
+                if (salaryInput) {
+                    salaryInput.focus();
+                    salaryInput.classList.add('border-red-500');
+                    setTimeout(() => salaryInput.classList.remove('border-red-500'), 3000);
+                }
+                return false;
+            }
+            
+            // Validate Exchange Rate
+            const exchangeRateInput = document.getElementById('exchangeRate');
+            const exchangeRate = parseFloat(exchangeRateInput?.value || '');
+            
+            if (!exchangeRateInput || !exchangeRateInput.value) {
+                showValidationModal(t.validationError, t.validationExchangeRateRequired);
+                if (exchangeRateInput) {
+                    exchangeRateInput.focus();
+                    exchangeRateInput.classList.add('border-red-500');
+                    setTimeout(() => exchangeRateInput.classList.remove('border-red-500'), 3000);
+                }
+                return false;
+            }
+            
+            if (exchangeRate <= 0) {
+                showValidationModal(t.validationError, t.validationExchangeRateInvalid);
+                if (exchangeRateInput) {
+                    exchangeRateInput.focus();
+                    exchangeRateInput.classList.add('border-red-500');
+                    setTimeout(() => exchangeRateInput.classList.remove('border-red-500'), 3000);
+                }
+                return false;
+            }
+            
+            if (exchangeRate < 1 || exchangeRate > 1000000) {
+                showValidationModal(t.validationError, t.validationExchangeRateRange);
+                if (exchangeRateInput) {
+                    exchangeRateInput.focus();
+                    exchangeRateInput.classList.add('border-red-500');
+                    setTimeout(() => exchangeRateInput.classList.remove('border-red-500'), 3000);
+                }
+                return false;
+            }
+            
+            // Validate Overtime (optional, but must be >= 0)
+            const overtimeInput = document.getElementById('overtime');
+            const overtime = parseFloat(overtimeInput?.value || '') || 0;
+            
+            if (overtime < 0) {
+                showValidationModal(t.validationError, t.validationOvertimeInvalid);
+                if (overtimeInput) {
+                    overtimeInput.focus();
+                    overtimeInput.classList.add('border-red-500');
+                    setTimeout(() => overtimeInput.classList.remove('border-red-500'), 3000);
+                }
+                return false;
+            }
+            
+            // Validate Other Allowances (optional, but must be >= 0)
+            const otherAllowancesInput = document.getElementById('otherAllowances');
+            const otherAllowances = parseFloat(otherAllowancesInput?.value || '') || 0;
+            
+            if (otherAllowances < 0) {
+                showValidationModal(t.validationError, t.validationOtherAllowancesInvalid);
+                if (otherAllowancesInput) {
+                    otherAllowancesInput.focus();
+                    otherAllowancesInput.classList.add('border-red-500');
+                    setTimeout(() => otherAllowancesInput.classList.remove('border-red-500'), 3000);
+                }
+                return false;
+            }
+            
+            // Validate Previous Tax (optional, but must be >= 0)
+            const previousTaxInput = document.getElementById('previousTax');
+            const previousTax = parseFloat(previousTaxInput?.value || '') || 0;
+            
+            if (previousTax < 0) {
+                showValidationModal(t.validationError, t.validationPreviousTaxInvalid);
+                if (previousTaxInput) {
+                    previousTaxInput.focus();
+                    previousTaxInput.classList.add('border-red-500');
+                    setTimeout(() => previousTaxInput.classList.remove('border-red-500'), 3000);
+                }
+                return false;
+            }
+            
+            return true;
         }
         
         // Initialize on page load
@@ -2423,6 +2634,11 @@ lo: {
         // Main calculation function
         function calculateSalary() {
             try {
+                // Validate inputs ก่อนคำนวณ
+                if (!validateInputs()) {
+                    return; // หยุดการทำงานถ้า validation ไม่ผ่าน
+                }
+                
                 const salaryInput = parseFormattedNumber(document.getElementById('grossSalary').value);
                 const currencyType = document.getElementById('currencySelector').value;
                 const exchangeRate = parseFloat(document.getElementById('exchangeRate').value);
@@ -2433,11 +2649,6 @@ lo: {
             const otherAllowances = parseFloat(document.getElementById('otherAllowances').value) || 0;
             
             const previousTaxLAK = parseFloat(document.getElementById('previousTax').value) || 0;
-            
-            if (!salaryInput || !exchangeRate || salaryInput <= 0 || exchangeRate <= 0) {
-                alert(currentLanguage === 'en' ? 'Please enter your base salary' : 'กรุณาใส่เงินเดือนพื้นฐาน');
-                return;
-            }
             
             // Convert salary to LAK
             let monthlySalaryLAK;
@@ -2523,7 +2734,8 @@ lo: {
             safeVibrate([10, 20, 10]);
             } catch (error) {
                 console.error('Error in calculateSalary:', error);
-                alert(currentLanguage === 'en' ? 'An error occurred during calculation. Please check the console for details.' : 'เกิดข้อผิดพลาดในการคำนวณ กรุณาตรวจสอบ console สำหรับรายละเอียด');
+                const t = translations[currentLanguage];
+                showValidationModal(t.validationCalculationError, t.validationCalculationFailed);
             }
         }
 
@@ -2607,9 +2819,10 @@ lo: {
 
         // Scroll to results
         function scrollToResults() {
+            const t = translations[currentLanguage];
             const results = document.getElementById('results');
             if (results.classList.contains('hidden')) {
-                alert(currentLanguage === 'en' ? 'Please calculate first' : 'ກະລຸນາຄຳນວນກ່ອນ');
+                showValidationModal(t.validationError, t.validationPleaseCalculateFirst);
                 return;
             }
             results.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2658,7 +2871,7 @@ lo: {
             const t = translations[currentLanguage];
             
             if (!calculationData.totalGrossLAK) {
-                alert(currentLanguage === 'en' ? 'Please calculate first' : 'ກະລຸນາຄຳນວນກ່ອນ');
+                showValidationModal(t.validationError, t.validationPleaseCalculateFirst);
                 return;
             }
             const annualGross = calculationData.totalGrossLAK * 12;
@@ -2726,7 +2939,7 @@ lo: {
             const salary2 = parseFloat(document.getElementById('compareSalary2').value);
             
             if (!salary1 || !salary2) {
-                alert(t.enterBothSalaries);
+                showValidationModal(t.validationError, t.enterBothSalaries);
                 return;
             }
             
@@ -2775,8 +2988,9 @@ lo: {
 
         // Export to Excel
         function exportToExcel() {
+            const t = translations[currentLanguage];
             if (!calculationData.totalGrossLAK) {
-                alert(currentLanguage === 'en' ? 'Please calculate first' : 'กรุณาคำนวณก่อน');
+                showValidationModal(t.validationError, t.validationPleaseCalculateFirst);
                 return;
             }
             
@@ -2834,8 +3048,9 @@ lo: {
 
         // Save calculation
         function saveCalculation() {
+            const t = translations[currentLanguage];
             if (!calculationData.totalGrossLAK) {
-                alert(currentLanguage === 'en' ? 'Please calculate first' : 'กรุณาคำนวณก่อน');
+                showValidationModal(t.validationError, t.validationPleaseCalculateFirst);
                 return;
             }
             
@@ -2859,10 +3074,11 @@ lo: {
 
         // Load saved calculations
         function loadSavedCalculations() {
+            const t = translations[currentLanguage];
             const savedCalculations = JSON.parse(localStorage.getItem('laoSalaryCalculations') || '[]');
             
             if (savedCalculations.length === 0) {
-                alert(currentLanguage === 'en' ? 'No saved calculations' : 'ไม่มีการคำนวณที่บันทึก');
+                showValidationModal(t.validationError, t.validationNoSavedCalculations);
                 return;
             }
             
