@@ -10,13 +10,14 @@
     <title>Lao PDR Salary Tax Calculator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Lao:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'system-ui', 'sans-serif'],
+                        lao: ['Noto Sans Lao', 'Inter', 'system-ui', 'sans-serif'],
                     },
                     colors: {
                         primary: {
@@ -76,6 +77,54 @@
             padding: 0;
             min-height: 100vh;
             padding-bottom: 0;
+        }
+        
+        /* ใช้ฟอนต์ Noto Sans Lao สำหรับภาษาลาว - ครอบคลุมทุกองค์ประกอบ */
+        body.lang-lao,
+        body.lang-lao *,
+        body.lang-lao h1,
+        body.lang-lao h2,
+        body.lang-lao h3,
+        body.lang-lao p,
+        body.lang-lao span,
+        body.lang-lao div,
+        body.lang-lao button,
+        body.lang-lao input,
+        body.lang-lao select,
+        body.lang-lao label,
+        body.lang-lao td,
+        body.lang-lao th,
+        body.lang-lao header,
+        body.lang-lao main,
+        body.lang-lao nav,
+        body.lang-lao section,
+        body.lang-lao article {
+            font-family: 'Noto Sans Lao', 'Inter', system-ui, -apple-system, sans-serif !important;
+        }
+        
+        /* ใช้ Noto Sans Lao สำหรับตัวเลขและสกุลเงิน ກີບ */
+        body.lang-lao .number-display,
+        body.lang-lao [id*="Display"],
+        body.lang-lao [id*="Highlight"],
+        body.lang-lao [id*="USD"],
+        body.lang-lao .currency-badge,
+        body.lang-lao .result-card,
+        body.lang-lao .section-card {
+            font-family: 'Noto Sans Lao', 'Inter', system-ui, -apple-system, sans-serif !important;
+        }
+        
+        /* ใช้ Noto Sans Lao สำหรับ modal และ bottom sheet */
+        body.lang-lao .modal,
+        body.lang-lao .bottom-sheet,
+        body.lang-lao .modal-overlay,
+        body.lang-lao .bottom-sheet-overlay {
+            font-family: 'Noto Sans Lao', 'Inter', system-ui, -apple-system, sans-serif !important;
+        }
+        
+        /* ใช้ Noto Sans Lao สำหรับทุก text element */
+        body.lang-lao ::before,
+        body.lang-lao ::after {
+            font-family: 'Noto Sans Lao', 'Inter', system-ui, -apple-system, sans-serif !important;
         }
         
         input, textarea, select {
@@ -171,6 +220,171 @@
         .currency-badge.lak {
             background: #fef3c7;
             color: #d97706;
+        }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 640px) {
+            /* ลด padding และ spacing สำหรับหน้าจอเล็ก */
+            main {
+                padding-bottom: 5rem !important;
+            }
+            
+            .px-4 {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            
+            .py-4 {
+                padding-top: 0.75rem;
+                padding-bottom: 0.75rem;
+            }
+            
+            /* ลดขนาดฟอนต์สำหรับหัวข้อ */
+            h1 {
+                font-size: 1rem !important;
+            }
+            
+            h2, h3 {
+                font-size: 0.875rem !important;
+            }
+            
+            /* ลดขนาดการ์ด */
+            .section-card {
+                padding: 0.75rem !important;
+            }
+            
+            /* ลดขนาด input */
+            input[type="number"] {
+                font-size: 1rem !important;
+                padding: 0.625rem 0.75rem !important;
+            }
+            
+            /* ลดขนาดปุ่ม */
+            .btn-primary {
+                padding: 0.875rem 1rem !important;
+                font-size: 0.9375rem !important;
+            }
+            
+            /* ลดขนาดผลลัพธ์ */
+            #netSalaryHighlight {
+                font-size: 2rem !important;
+            }
+            
+            /* ปรับ grid ให้กะทัดรัด */
+            .grid-cols-2 {
+                gap: 0.5rem;
+            }
+            
+            .grid-cols-3 {
+                gap: 0.5rem;
+            }
+            
+            .grid-cols-4 {
+                gap: 0.375rem;
+            }
+            
+            /* ลด spacing ระหว่าง sections */
+            .space-y-4 > * + * {
+                margin-top: 0.75rem;
+            }
+            
+            .space-y-3 > * + * {
+                margin-top: 0.5rem;
+            }
+            
+            /* ปรับ bottom navigation */
+            nav {
+                padding-top: 0.5rem;
+                padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem);
+            }
+            
+            /* ลดขนาด icon */
+            .w-10, .h-10 {
+                width: 2rem;
+                height: 2rem;
+            }
+            
+            .w-11, .h-11 {
+                width: 2.5rem;
+                height: 2.5rem;
+            }
+            
+            /* ปรับ header */
+            header {
+                padding-top: 0.625rem;
+                padding-bottom: 0.625rem;
+            }
+        }
+        
+        @media (max-width: 375px) {
+            /* สำหรับหน้าจอเล็กมาก */
+            .px-4 {
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+            }
+            
+            #netSalaryHighlight {
+                font-size: 1.5rem !important;
+            }
+            
+            .text-4xl {
+                font-size: 1.5rem !important;
+            }
+            
+            .text-xl {
+                font-size: 0.875rem !important;
+            }
+            
+            .text-lg {
+                font-size: 0.875rem !important;
+            }
+            
+            /* ลดขนาดข้อความใน result card */
+            #results .text-sm {
+                font-size: 0.75rem !important;
+            }
+            
+            #results .text-base {
+                font-size: 0.8125rem !important;
+            }
+            
+            /* ลดขนาด icon และ spacing เพิ่มเติม */
+            .w-9, .h-9 {
+                width: 1.75rem;
+                height: 1.75rem;
+            }
+            
+            .w-12, .h-12 {
+                width: 2.5rem;
+                height: 2.5rem;
+            }
+            
+            /* ปรับ grid columns ให้เหมาะสม */
+            .grid-cols-3 {
+                gap: 0.375rem;
+            }
+            
+            .grid-cols-4 {
+                gap: 0.25rem;
+            }
+            
+            /* ลด padding ของการ์ด */
+            .rounded-2xl {
+                padding: 0.625rem !important;
+            }
+        }
+        
+        /* ปรับปรุงการแสดงผลสำหรับหน้าจอแนวตั้ง */
+        @media (orientation: portrait) and (max-width: 480px) {
+            /* ลดขนาดฟอนต์ในผลลัพธ์ */
+            .number-display {
+                font-size: 0.9em;
+            }
+            
+            /* ปรับ spacing ของ sections */
+            main > div > div {
+                margin-bottom: 0.75rem;
+            }
         }
         
         /* Bottom Sheet */
@@ -317,7 +531,7 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="text-xs text-gray-500" data-i18n="quickNetSalary">Net Salary</p>
-                            <p class="text-base font-bold text-green-600 number-display truncate" id="quickNetDisplay">0 LAK</p>
+                            <p class="text-base font-bold text-green-600 number-display truncate" id="quickNetDisplay">0 ກີບ</p>
                         </div>
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -344,7 +558,7 @@
                                 class="input-field w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                             >
                                 <option value="USD">🇺🇸 USD</option>
-                                <option value="LAK">🇱🇦 LAK</option>
+                                <option value="LAK">🇱🇦 ກີບ</option>
                             </select>
                         </div>
                         <div>
@@ -380,7 +594,7 @@
                 
                 <!-- Exchange Rate -->
                 <div class="px-4 py-3">
-                    <label class="block text-xs font-semibold text-gray-600 mb-2" data-i18n="labelExchange">Exchange Rate (1 USD = LAK)</label>
+                    <label class="block text-xs font-semibold text-gray-600 mb-2" data-i18n="labelExchange">Exchange Rate (1 USD = ກີບ)</label>
                     <div class="relative">
                         <input 
                             type="number" 
@@ -391,7 +605,7 @@
                             inputmode="decimal"
                             class="mobile-input input-field w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-base font-medium text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                         >
-                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">LAK</span>
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">ກີບ</span>
                     </div>
                 </div>
             </div>
@@ -429,7 +643,7 @@
                                 inputmode="decimal"
                                 class="mobile-input w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-right text-sm font-medium focus:ring-2 focus:ring-primary-500"
                             >
-                            <span class="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-gray-400">LAK</span>
+                            <span class="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-gray-400">ກີບ</span>
                         </div>
                     </div>
                     
@@ -453,14 +667,14 @@
                                 inputmode="decimal"
                                 class="mobile-input w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-right text-sm font-medium focus:ring-2 focus:ring-primary-500"
                             >
-                            <span class="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-gray-400">LAK</span>
+                            <span class="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-gray-400">ກີບ</span>
                         </div>
                     </div>
                     
                     <!-- Total Allowances Display -->
                     <div class="mt-4 p-3 bg-primary-50 rounded-xl flex items-center justify-between">
                         <span class="text-sm font-semibold text-primary-800" data-i18n="totalAllowances">Total Allowances</span>
-                        <span id="totalAllowancesDisplay" class="text-lg font-bold text-primary-600 number-display">0 LAK</span>
+                        <span id="totalAllowancesDisplay" class="text-lg font-bold text-primary-600 number-display">0 ກີບ</span>
                     </div>
                 </div>
             </div>
@@ -508,7 +722,7 @@
                                 inputmode="decimal"
                                 class="mobile-input w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500"
                             >
-                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">LAK</span>
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">ກີບ</span>
                         </div>
                         <p class="text-xs text-gray-500 mt-1" data-i18n="prevTaxHelp">Deducts from calculated tax</p>
                     </div>
@@ -529,33 +743,33 @@
             <!-- Results Section -->
             <div id="results" class="hidden space-y-4 animate-slide-up">
                 <!-- Net Salary Highlight Card -->
-                <div class="bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 rounded-3xl p-6 text-white shadow-xl shadow-primary-500/30">
+                <div class="bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 rounded-3xl p-3 sm:p-4 text-white shadow-xl shadow-primary-500/30">
                     <div class="flex items-start justify-between">
-                        <div>
-                            <p class="text-sm text-primary-100 mb-1" data-i18n="yourNetSalary">Your Net Salary</p>
-                            <p class="text-4xl font-bold number-display" id="netSalaryHighlight">0 LAK</p>
-                            <p class="text-lg text-primary-200 mt-1 number-display" id="netSalaryUSD">$0.00 USD</p>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs text-primary-100 mb-0.5" data-i18n="yourNetSalary">Your Net Salary</p>
+                            <p class="text-xl sm:text-2xl font-bold number-display break-words" id="netSalaryHighlight">0 ກີບ</p>
+                            <p class="text-xs sm:text-sm text-primary-200 mt-0.5 number-display" id="netSalaryUSD">$0.00 USD</p>
                         </div>
-                        <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0 ml-2">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
                     </div>
                     
-                    <div class="mt-6 pt-4 border-t border-primary-400/30">
-                        <div class="grid grid-cols-3 gap-4">
+                    <div class="mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-primary-400/30">
+                        <div class="grid grid-cols-3 gap-1.5 sm:gap-2">
                             <div>
                                 <p class="text-xs text-primary-200" data-i18n="totalGross">Gross</p>
-                                <p class="text-xl font-bold number-display" id="totalGrossDisplay">0 LAK</p>
+                                <p class="text-xs sm:text-sm font-bold number-display break-words" id="totalGrossDisplay">0 ກີບ</p>
                             </div>
                             <div>
                                 <p class="text-xs text-primary-200" data-i18n="totalDeductions">Deductions</p>
-                                <p class="text-xl font-bold number-display text-red-200" id="totalDeductionsDisplay">0 LAK</p>
+                                <p class="text-xs sm:text-sm font-bold number-display text-red-200 break-words" id="totalDeductionsDisplay">0 ກີບ</p>
                             </div>
                             <div>
                                 <p class="text-xs text-primary-200" data-i18n="effectiveRate">Tax Rate</p>
-                                <p class="text-xl font-bold number-display" id="effectiveRateDisplay">0%</p>
+                                <p class="text-xs sm:text-sm font-bold number-display" id="effectiveRateDisplay">0%</p>
                             </div>
                         </div>
                     </div>
@@ -563,109 +777,109 @@
 
                 <!-- Detailed Breakdown -->
                 <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                    <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
-                        <h3 class="font-semibold text-gray-900" data-i18n="breakdownTitle">Detailed Breakdown</h3>
+                    <div class="px-3 py-2 bg-gray-50 border-b border-gray-200">
+                        <h3 class="text-xs sm:text-sm font-semibold text-gray-900" data-i18n="breakdownTitle">Detailed Breakdown</h3>
                     </div>
                     
                     <div class="divide-y divide-gray-100">
                         <!-- Base Salary -->
-                        <div class="px-4 py-3 flex items-center justify-between">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
-                                    <span class="text-lg">💰</span>
+                        <div class="px-3 py-2 flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                                    <span class="text-sm">💰</span>
                                 </div>
                                 <div>
-                                    <p class="text-sm font-semibold text-gray-900" data-i18n="baseSalary">Base Salary</p>
+                                    <p class="text-xs font-semibold text-gray-900" data-i18n="baseSalary">Base Salary</p>
                                     <p class="text-xs text-gray-500" id="baseSalaryCurrency">USD</p>
                                 </div>
                             </div>
-                            <p class="text-sm font-bold text-gray-900 number-display" id="baseSalaryDisplay">0</p>
+                            <p class="text-xs font-bold text-gray-900 number-display" id="baseSalaryDisplay">0</p>
                         </div>
                         
                         <!-- Total Allowances -->
-                        <div class="px-4 py-3 flex items-center justify-between">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
-                                    <span class="text-lg">➕</span>
+                        <div class="px-3 py-2 flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">
+                                    <span class="text-sm">➕</span>
                                 </div>
                                 <div>
-                                    <p class="text-sm font-semibold text-gray-900" data-i18n="totalAllowances">Total Allowances</p>
+                                    <p class="text-xs font-semibold text-gray-900" data-i18n="totalAllowances">Total Allowances</p>
                                     <p class="text-xs text-gray-500" data-i18n="allBenefits">All benefits included</p>
                                 </div>
                             </div>
-                            <p class="text-sm font-bold text-green-600 number-display" id="breakdownAllowancesDisplay">0 LAK</p>
+                            <p class="text-xs font-bold text-green-600 number-display" id="breakdownAllowancesDisplay">0 ກີບ</p>
                         </div>
                         
                         <!-- Gross Salary -->
-                        <div class="px-4 py-3 flex items-center justify-between bg-primary-50">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
-                                    <span class="text-lg">📊</span>
+                        <div class="px-3 py-2 flex items-center justify-between bg-primary-50">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-sm">📊</span>
                                 </div>
                                 <div>
-                                    <p class="text-sm font-bold text-primary-900" data-i18n="grossSalary">Gross Salary</p>
+                                    <p class="text-xs font-bold text-primary-900" data-i18n="grossSalary">Gross Salary</p>
                                     <p class="text-xs text-primary-600" data-i18n="beforeDeductions">Before deductions</p>
                                 </div>
                             </div>
-                            <p class="text-lg font-bold text-primary-700 number-display" id="grossSalaryDisplay">0 LAK</p>
+                            <p class="text-xs sm:text-sm font-bold text-primary-700 number-display" id="grossSalaryDisplay">0 ກີບ</p>
                         </div>
                         
                         <!-- LSSO Deduction -->
-                        <div class="px-4 py-3 flex items-center justify-between">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
-                                    <span class="text-lg">🔴</span>
+                        <div class="px-3 py-2 flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center">
+                                    <span class="text-sm">🔴</span>
                                 </div>
                                 <div>
-                                    <p class="text-sm font-semibold text-gray-900" data-i18n="lssoDeduction">LSSO Deduction</p>
+                                    <p class="text-xs font-semibold text-gray-900" data-i18n="lssoDeduction">LSSO Deduction</p>
                                     <p class="text-xs text-gray-500">5.5% of salary</p>
                                 </div>
                             </div>
-                            <p class="text-sm font-bold text-red-600 number-display" id="lssoAmountDisplay">-0 LAK</p>
+                            <p class="text-xs font-bold text-red-600 number-display" id="lssoAmountDisplay">-0 ກີບ</p>
                         </div>
                         
                         <!-- Taxable Income -->
-                        <div class="px-4 py-3 flex items-center justify-between">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-yellow-50 rounded-xl flex items-center justify-center">
-                                    <span class="text-lg">📋</span>
+                        <div class="px-3 py-2 flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-yellow-50 rounded-lg flex items-center justify-center">
+                                    <span class="text-sm">📋</span>
                                 </div>
                                 <div>
-                                    <p class="text-sm font-semibold text-gray-900" data-i18n="taxableIncome">Taxable Income</p>
+                                    <p class="text-xs font-semibold text-gray-900" data-i18n="taxableIncome">Taxable Income</p>
                                     <p class="text-xs text-gray-500" data-i18n="afterLSSO">After LSSO</p>
                                 </div>
                             </div>
-                            <p class="text-sm font-bold text-gray-900 number-display" id="taxableIncomeDisplay">0 LAK</p>
+                            <p class="text-xs font-bold text-gray-900 number-display" id="taxableIncomeDisplay">0 ກີບ</p>
                         </div>
                         
                         <!-- PIT Tax -->
-                        <div class="px-4 py-3 flex items-center justify-between">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center">
-                                    <span class="text-lg">📈</span>
+                        <div class="px-3 py-2 flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
+                                    <span class="text-sm">📈</span>
                                 </div>
                                 <div>
-                                    <p class="text-sm font-semibold text-gray-900" data-i18n="pitTax">PIT Tax</p>
+                                    <p class="text-xs font-semibold text-gray-900" data-i18n="pitTax">PIT Tax</p>
                                     <p class="text-xs text-gray-500">Personal Income Tax</p>
                                 </div>
                             </div>
-                            <p class="text-sm font-bold text-orange-600 number-display" id="pitAmountDisplay">-0 LAK</p>
+                            <p class="text-xs font-bold text-orange-600 number-display" id="pitAmountDisplay">-0 ກີບ</p>
                         </div>
                         
                         <!-- Net Salary -->
-                        <div class="px-4 py-4 flex items-center justify-between bg-gradient-to-r from-green-50 to-emerald-50">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                                    <span class="text-xl">✅</span>
+                        <div class="px-3 py-2.5 flex items-center justify-between bg-gradient-to-r from-green-50 to-emerald-50">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-9 h-9 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center shadow-lg">
+                                    <span class="text-base">✅</span>
                                 </div>
                                 <div>
-                                    <p class="text-lg font-bold text-gray-900" data-i18n="netSalary">Net Salary</p>
+                                    <p class="text-xs sm:text-sm font-bold text-gray-900" data-i18n="netSalary">Net Salary</p>
                                     <p class="text-xs text-gray-600" data-i18n="takeHome">Take home pay</p>
                                 </div>
                             </div>
                             <div class="text-right">
-                                <p class="text-xl font-bold text-green-600 number-display" id="netSalaryDisplay">0 LAK</p>
-                                <p class="text-sm text-green-500 number-display" id="netSalaryUSDDisplay">$0.00 USD</p>
+                                <p class="text-sm sm:text-base font-bold text-green-600 number-display" id="netSalaryDisplay">0 ກີບ</p>
+                                <p class="text-xs text-green-500 number-display" id="netSalaryUSDDisplay">$0.00 USD</p>
                             </div>
                         </div>
                     </div>
@@ -673,12 +887,12 @@
 
                 <!-- Tax Brackets -->
                 <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                    <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
-                        <h3 class="font-semibold text-gray-900" data-i18n="taxBracketsTitle">Tax Brackets Applied</h3>
+                    <div class="px-3 py-2 bg-gray-50 border-b border-gray-200">
+                        <h3 class="text-xs sm:text-sm font-semibold text-gray-900" data-i18n="taxBracketsTitle">Tax Brackets Applied</h3>
                     </div>
                     
-                    <div class="p-4">
-                        <div class="space-y-2" id="taxBracketDetails">
+                    <div class="p-3">
+                        <div class="space-y-1.5" id="taxBracketDetails">
                             <!-- Tax brackets will be populated here -->
                         </div>
                     </div>
@@ -729,29 +943,29 @@
 
                 <!-- Annual Summary -->
                 <div id="annualSummary" class="hidden bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden animate-slide-up">
-                    <div class="px-4 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white flex items-center justify-between">
-                        <h3 class="font-semibold" data-i18n="annualSummaryTitle">Annual Summary</h3>
+                    <div class="px-3 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white flex items-center justify-between">
+                        <h3 class="text-xs sm:text-sm font-semibold" data-i18n="annualSummaryTitle">Annual Summary</h3>
                         <button onclick="closeAnnualSummary()" class="p-1 hover:bg-white/20 rounded-lg transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
                         </button>
                     </div>
-                    <div class="p-4" id="annualBreakdown"></div>
+                    <div class="p-3" id="annualBreakdown"></div>
                 </div>
 
                 <!-- Comparison Tool -->
                 <div id="comparisonTool" class="hidden bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden animate-slide-up">
-                    <div class="px-4 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white flex items-center justify-between">
-                        <h3 class="font-semibold" data-i18n="comparisonTitle">Compare Salaries</h3>
+                    <div class="px-3 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white flex items-center justify-between">
+                        <h3 class="text-xs sm:text-sm font-semibold" data-i18n="comparisonTitle">Compare Salaries</h3>
                         <button onclick="closeComparison()" class="p-1 hover:bg-white/20 rounded-lg transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
                         </button>
                     </div>
                     
-                    <div class="p-4 space-y-3">
+                    <div class="p-3 space-y-2">
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 mb-1.5" data-i18n="compareSalary1">Salary 1</label>
                             <input 
@@ -979,71 +1193,71 @@
                 langEN: 'EN',
                 langLO: 'LO'
             },
-            lo: {
-                headerTitle: 'ภาษีเงินเดือน สปป ลาว',
-                headerSubtitle: 'คำนวณ LSSO, PIT & สุทธิ',
-                noteTitle: 'หมายเหตุ:',
-                noteText: 'ใช้กฎหมายภาษีปี 2025. ตรวจสอบอัตรา USD-LAK.',
-                quickEnterSalary: 'ใส่เงินเดือน',
-                quickNetSalary: 'เงินสุทธิ',
-                yourNetSalary: 'เงินเดือนสุทธิของคุณ',
-                totalGross: 'รวม',
-                totalDeductions: 'หัก',
-                effectiveRate: 'อัตราภาษี',
-                mainInputSection: 'ข้อมูลหลัก',
-                labelCurrency: 'สกุลเงิน',
-                salaryLabel: 'เงินเดือนพื้นฐาน',
-                salaryLabelLAK: 'เงินเดือนพื้นฐาน (กีบ)',
-                labelExchange: 'อัตราแลกเปลี่ยน',
-                labelSalaryType: 'ประเภทเงินเดือน',
-                monthly: 'รายเดือน',
-                annual: 'รายปี',
-                allowancesSection: 'ค่าตอบแทนและสวัสดิการ',
-                overtime: 'ค่าล่วงเวลา (OT)',
-                overtimeHelp: 'ค่าจ้างชั่วโมงพิเศษ',
-                otherAllowances: 'ค่าตอบแทนอื่นๆ',
-                otherAllowancesHelp: 'โบนัส, ค่าตอบแทนพิเศษ ฯลฯ',
-                totalAllowances: 'ค่าตอบแทนรวม',
-                deductionsOptions: 'การหักและตัวเลือก',
-                labelSSO: 'ประกันสังคม (LSSO)',
-                yesOption: 'มี (5.5%)',
-                noOption: 'ไม่มี (ยกเว้น)',
-                labelPrevTax: 'ภาษีที่จ่ายไปแล้ว',
-                prevTaxHelp: 'หักจากภาษีที่คำนวณได้',
-                btnCalculate: 'คำนวณเงินสุทธิ',
-                breakdownTitle: 'รายละเอียดการคำนวณ',
-                baseSalary: 'เงินเดือนพื้นฐาน',
-                baseSalaryCurrency: 'เงินเดือนพื้นฐาน',
-                allBenefits: 'รวมค่าตอบแทนทั้งหมด',
-                grossSalary: 'เงินเดือนรวม',
-                beforeDeductions: 'ก่อนหักค่าใดๆ',
-                lssoDeduction: 'หักประกันสังคม',
-                taxableIncome: 'รายได้ที่เสียภาษี',
-                afterLSSO: 'หลังหัก LSSO',
-                pitTax: 'ภาษีเงินได้',
-                netSalary: 'เงินสุทธิ',
-                takeHome: 'เงินที่ได้รับจริง',
-                taxBracketsTitle: 'ขั้นภาษีที่ใช้',
-                btnExport: 'ส่งออก',
-                btnAnnual: 'รายปี',
-                btnCompare: 'เปรียบเทียบ',
-                btnMore: 'เพิ่มเติม',
-                btnPrint: 'พิมพ์',
-                btnSave: 'บันทึก',
-                navHome: 'หน้าหลัก',
-                navPrint: 'พิมพ์',
-                navSave: 'บันทึก',
-                navSaved: 'ที่บันทึก',
-                annualSummaryTitle: 'สรุปรายปี',
-                comparisonTitle: 'เปรียบเทียบเงินเดือน',
-                compareSalary1: 'เงินเดือน 1',
-                compareSalary2: 'เงินเดือน 2',
-                btnCompareAction: 'เปรียบเทียบ',
-                moreOptionsTitle: 'ตัวเลือกเพิ่มเติม',
-                loadSaved: 'โหลดที่บันทึก',
-                btnCancel: 'ยกเลิก',
-                savedCalculationsTitle: 'การคำนวณที่บันทึก',
-                footerText: 'สร้างโดย Sinkerd | © 2025',
+lo: {
+                headerTitle: 'ພາສີເງິນເດືອນ ສປປ ລາວ',
+                headerSubtitle: 'ຄຳນວນ LSSO, PIT & ເງິນສຸດທິ',
+                noteTitle: 'ໝາຍເຫດ:',
+                noteText: 'ອີງຕາມກົດໝາຍສ່ວຍສາອາກອນປີ 2025. ກະລຸນາກວດສອບອັດຕາແລກປ່ຽນ USD-LAK.',
+                quickEnterSalary: 'ປ້ອນເງິນເດືອນ',
+                quickNetSalary: 'ເງິນສຸດທິ',
+                yourNetSalary: 'ເງິນເດືອນສຸດທິຂອງທ່ານ',
+                totalGross: 'ລວມທັງໝົດ',
+                totalDeductions: 'ລາຍການຫັກ',
+                effectiveRate: 'ອັດຕາອາກອນຕົວຈິງ',
+                mainInputSection: 'ຂໍ້ມູນຫຼັກ',
+                labelCurrency: 'ສະກຸນເງິນ',
+                salaryLabel: 'ເງິນເດືອນພື້ນຖານ',
+                salaryLabelLAK: 'ເງິນເດືອນພື້ນຖານ (ກີບ)',
+                labelExchange: 'ອັດຕາແລກປ່ຽນ',
+                labelSalaryType: 'ປະເພດເງິນເດືອນ',
+                monthly: 'ລາຍເດືອນ',
+                annual: 'ລາຍປີ',
+                allowancesSection: 'ເງິນອຸດໜູນ ແລະ ສະຫວັດດີການ',
+                overtime: 'ຄ່າລ່ວງເວລາ (OT)',
+                overtimeHelp: 'ຄ່າຈ້າງຊົ່ວໂມງພິເສດ',
+                otherAllowances: 'ເງິນອຸດໜູນອື່ນໆ',
+                otherAllowancesHelp: 'ໂບນັດ, ຄ່າຕຳແໜ່ງ, ເງິນອຸດໜູນພິເສດ ຯລຯ',
+                totalAllowances: 'ລວມເງິນອຸດໜູນ',
+                deductionsOptions: 'ການຫັກ ແລະ ຕົວເລືອກ',
+                labelSSO: 'ປະກັນສັງຄົມ (LSSO)',
+                yesOption: 'ມີ (5.5%)',
+                noOption: 'ບໍ່ມີ (ຍົກເວັ້ນ)',
+                labelPrevTax: 'ອາກອນທີ່ຈ່າຍແລ້ວ',
+                prevTaxHelp: 'ຫັກອອກຈາກອາກອນທີ່ຄຳນວນໄດ້',
+                btnCalculate: 'ຄຳນວນເງິນສຸດທິ',
+                breakdownTitle: 'ລາຍລະອຽດການຄຳນວນ',
+                baseSalary: 'ເງິນເດືອນພື້ນຖານ',
+                baseSalaryCurrency: 'ເງິນເດືອນພື້ນຖານ',
+                allBenefits: 'ລວມຜົນປະໂຫຍດທັງໝົດ',
+                grossSalary: 'ເງິນເດືອນລວມ',
+                beforeDeductions: 'ກ່ອນຫັກລາຍການຕ່າງໆ',
+                lssoDeduction: 'ຫັກປະກັນສັງຄົມ',
+                taxableIncome: 'ລາຍໄດ້ທີ່ຕ້ອງເສຍອາກອນ',
+                afterLSSO: 'ຫຼັງຫັກ LSSO',
+                pitTax: 'ອາກອນລາຍໄດ້',
+                netSalary: 'ເງິນສຸດທິ',
+                takeHome: 'ເງິນທີ່ໄດ້ຮັບຕົວຈິງ',
+                taxBracketsTitle: 'ຂັ້ນອາກອນທີ່ນຳໃຊ້',
+                btnExport: 'ສົ່ງອອກ',
+                btnAnnual: 'ລາຍປີ',
+                btnCompare: 'ປຽບທຽບ',
+                btnMore: 'ເພີ່ມເຕີມ',
+                btnPrint: 'ພິມ',
+                btnSave: 'ບັນທຶກ',
+                navHome: 'ໜ້າຫຼັກ',
+                navPrint: 'ພິມ',
+                navSave: 'ບັນທຶກ',
+                navSaved: 'ລາຍການທີ່ບັນທຶກ',
+                annualSummaryTitle: 'ສະຫຼຸບລາຍປີ',
+                comparisonTitle: 'ປຽບທຽບເງິນເດືອນ',
+                compareSalary1: 'ເງິນເດືອນ 1',
+                compareSalary2: 'ເງິນເດືອນ 2',
+                btnCompareAction: 'ເລີ່ມການປຽບທຽບ',
+                moreOptionsTitle: 'ຕົວເລືອກເພີ່ມເຕີມ',
+                loadSaved: 'ເປີດຂໍ້ມູນທີ່ບັນທຶກ',
+                btnCancel: 'ຍົກເລີກ',
+                savedCalculationsTitle: 'ປະຫວັດການຄຳນວນ',
+                footerText: 'ສ້າງໂດຍ Sinkerd | © 2025',
                 langEN: 'EN',
                 langLO: 'LO'
             }
@@ -1088,6 +1302,13 @@
         function updateLanguage() {
             const t = translations[currentLanguage];
             
+            // เพิ่ม/ลบ class สำหรับเปลี่ยนฟอนต์ตามภาษา
+            if (currentLanguage === 'lo') {
+                document.body.classList.add('lang-lao');
+            } else {
+                document.body.classList.remove('lang-lao');
+            }
+            
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (t[key]) {
@@ -1118,7 +1339,7 @@
             
             if (salaryInput && parseFloat(salaryInput) > 0) {
                 const value = parseFloat(salaryInput).toLocaleString();
-                quickSalaryDisplay.textContent = currencyType === 'USD' ? '$' + value : value + ' LAK';
+                quickSalaryDisplay.textContent = currencyType === 'USD' ? '$' + value + ' USD' : value + ' ' + getCurrencyDisplay(currencyType);
             } else {
                 quickSalaryDisplay.textContent = '$0';
             }
@@ -1136,9 +1357,9 @@
             if (currencySelector.value === 'LAK') {
                 salaryLabel.setAttribute('data-i18n', 'salaryLabelLAK');
                 salaryLabel.textContent = t.salaryLabelLAK;
-                currencyBadge.textContent = 'LAK';
+                currencyBadge.textContent = getCurrencyDisplay('LAK');
                 currencyBadge.className = 'currency-badge lak';
-                baseSalaryCurrency.textContent = 'LAK';
+                baseSalaryCurrency.textContent = getCurrencyDisplay('LAK');
             } else {
                 salaryLabel.setAttribute('data-i18n', 'salaryLabel');
                 salaryLabel.textContent = t.salaryLabel;
@@ -1180,12 +1401,51 @@
             const other = parseFloat(document.getElementById('otherAllowances').value) || 0;
             
             const total = ot + other;
-            document.getElementById('totalAllowancesDisplay').textContent = formatNumber(total) + ' LAK';
+            // Allowances แสดงเป็น LAK เสมอ
+            document.getElementById('totalAllowancesDisplay').textContent = formatCurrency(total, 'LAK');
         }
 
         // Format number with commas
         function formatNumber(num) {
             return new Intl.NumberFormat('en-US').format(Math.round(num));
+        }
+        
+        // ฟังก์ชันสำหรับแสดงสกุลเงิน - ใช้ ກີບ แทน LAK สำหรับลาว
+        function getCurrencyDisplay(currencyType) {
+            // ถ้าไม่ระบุ currencyType ให้ตรวจสอบจาก selector
+            if (!currencyType) {
+                currencyType = document.getElementById('currencySelector')?.value || 'USD';
+            }
+            // ถ้าเลือก USD ให้แสดง USD, ถ้าเลือก LAK ให้แสดง ກີບ
+            return currencyType === 'USD' ? 'USD' : 'ກີບ';
+        }
+        
+        // ฟังก์ชันสำหรับแสดงจำนวนเงินพร้อมสกุลเงิน
+        function formatCurrency(num, currencyType) {
+            // ถ้าไม่ระบุ currencyType ให้ตรวจสอบจาก selector
+            if (!currencyType) {
+                currencyType = document.getElementById('currencySelector')?.value || 'USD';
+            }
+            
+            if (currencyType === 'USD') {
+                return '$' + formatNumber(num);
+            } else {
+                return formatNumber(num) + ' ' + getCurrencyDisplay(currencyType);
+            }
+        }
+        
+        // ฟังก์ชันสำหรับแปลง LAK เป็น USD สำหรับแสดงผล
+        function formatCurrencyWithConversion(lakAmount, currencyType, exchangeRate) {
+            if (!currencyType) {
+                currencyType = document.getElementById('currencySelector')?.value || 'USD';
+            }
+            
+            if (currencyType === 'USD' && exchangeRate) {
+                const usdAmount = lakAmount / exchangeRate;
+                return '$' + usdAmount.toFixed(2) + ' USD';
+            } else {
+                return formatCurrency(lakAmount, currencyType);
+            }
         }
 
         // Calculate LSSO
@@ -1329,28 +1589,30 @@
         function updateDisplays() {
             const data = calculationData;
             
-            // Net salary highlight
-            document.getElementById('netSalaryHighlight').textContent = formatNumber(data.netLAK) + ' LAK';
+            // Net salary highlight - แสดงเป็น LAK เสมอ (เหมือนเดิม)
+            document.getElementById('netSalaryHighlight').textContent = formatCurrency(data.netLAK, 'LAK');
             document.getElementById('netSalaryUSD').textContent = '$' + data.netUSD.toFixed(2) + ' USD';
             
-            // Summary stats
-            document.getElementById('totalGrossDisplay').textContent = formatNumber(data.totalGrossLAK) + ' LAK';
-            document.getElementById('totalDeductionsDisplay').textContent = formatNumber(data.lssoAmount + data.pitAmount) + ' LAK';
+            // Summary stats - แสดงเป็น LAK เสมอ
+            document.getElementById('totalGrossDisplay').textContent = formatCurrency(data.totalGrossLAK, 'LAK');
+            document.getElementById('totalDeductionsDisplay').textContent = formatCurrency(data.lssoAmount + data.pitAmount, 'LAK');
             document.getElementById('effectiveRateDisplay').textContent = data.effectiveRate.toFixed(1) + '%';
             
-            // Quick displays
-            document.getElementById('quickNetDisplay').textContent = formatNumber(data.netLAK) + ' LAK';
+            // Quick displays - แสดงเป็น LAK เสมอ
+            document.getElementById('quickNetDisplay').textContent = formatCurrency(data.netLAK, 'LAK');
             updateQuickDisplays();
             
-            // Breakdown
+            // Breakdown - แสดงเป็น LAK เสมอ
             document.getElementById('baseSalaryDisplay').textContent = data.inputCurrency === 'USD' ? 
-                '$' + data.inputAmount.toLocaleString() : formatNumber(data.inputAmount) + ' LAK';
-            document.getElementById('breakdownAllowancesDisplay').textContent = formatNumber(data.allowances.total) + ' LAK';
-            document.getElementById('grossSalaryDisplay').textContent = formatNumber(data.totalGrossLAK) + ' LAK';
-            document.getElementById('lssoAmountDisplay').textContent = '-' + formatNumber(data.lssoAmount) + ' LAK';
-            document.getElementById('taxableIncomeDisplay').textContent = formatNumber(data.taxableIncome) + ' LAK';
-            document.getElementById('pitAmountDisplay').textContent = '-' + formatNumber(data.pitAmount) + ' LAK';
-            document.getElementById('netSalaryDisplay').textContent = formatNumber(data.netLAK) + ' LAK';
+                '$' + data.inputAmount.toLocaleString() : formatCurrency(data.inputAmount, 'LAK');
+            
+            // Allowances และ deductions แสดงเป็น LAK เสมอ
+            document.getElementById('breakdownAllowancesDisplay').textContent = formatCurrency(data.allowances.total, 'LAK');
+            document.getElementById('grossSalaryDisplay').textContent = formatCurrency(data.totalGrossLAK, 'LAK');
+            document.getElementById('lssoAmountDisplay').textContent = '-' + formatCurrency(data.lssoAmount, 'LAK');
+            document.getElementById('taxableIncomeDisplay').textContent = formatCurrency(data.taxableIncome, 'LAK');
+            document.getElementById('pitAmountDisplay').textContent = '-' + formatCurrency(data.pitAmount, 'LAK');
+            document.getElementById('netSalaryDisplay').textContent = formatCurrency(data.netLAK, 'LAK');
             document.getElementById('netSalaryUSDDisplay').textContent = '$' + data.netUSD.toFixed(2) + ' USD';
             
             // Tax brackets
@@ -1360,13 +1622,13 @@
             if (data.taxDetails && data.taxDetails.length > 0) {
                 data.taxDetails.forEach(detail => {
                     const div = document.createElement('div');
-                    div.className = 'flex items-center justify-between py-2 px-3 bg-gray-50 rounded-xl';
+                    div.className = 'flex items-center justify-between py-1.5 px-2 bg-gray-50 rounded-lg';
                     div.innerHTML = `
                         <div>
-                            <p class="text-xs text-gray-500">${detail.range} LAK</p>
-                            <p class="text-sm font-medium text-gray-700">${detail.rate}</p>
+                            <p class="text-xs text-gray-500">${detail.range} ${getCurrencyDisplay('LAK')}</p>
+                            <p class="text-xs font-medium text-gray-700">${detail.rate}</p>
                         </div>
-                        <p class="text-sm font-semibold text-orange-600 number-display">-${formatNumber(detail.tax)} LAK</p>
+                        <p class="text-xs font-semibold text-orange-600 number-display">-${formatCurrency(detail.tax, 'LAK')}</p>
                     `;
                     taxBracketDetails.appendChild(div);
                 });
@@ -1441,22 +1703,22 @@
             
             const annualBreakdown = document.getElementById('annualBreakdown');
             annualBreakdown.innerHTML = `
-                <div class="space-y-2">
-                    <div class="flex justify-between py-2 px-3 bg-gray-50 rounded-xl">
-                        <span class="text-sm text-gray-600">Annual Gross</span>
-                        <span class="text-sm font-semibold">${formatNumber(annualGross)} LAK</span>
+                <div class="space-y-1.5">
+                    <div class="flex justify-between py-1.5 px-2 bg-gray-50 rounded-lg">
+                        <span class="text-xs text-gray-600">Annual Gross</span>
+                        <span class="text-xs font-semibold">${formatCurrency(annualGross, 'LAK')}</span>
                     </div>
-                    <div class="flex justify-between py-2 px-3 bg-red-50 rounded-xl">
-                        <span class="text-sm text-gray-600">Annual LSSO</span>
-                        <span class="text-sm font-semibold text-red-600">-${formatNumber(annualLSSO)} LAK</span>
+                    <div class="flex justify-between py-1.5 px-2 bg-red-50 rounded-lg">
+                        <span class="text-xs text-gray-600">Annual LSSO</span>
+                        <span class="text-xs font-semibold text-red-600">-${formatCurrency(annualLSSO, 'LAK')}</span>
                     </div>
-                    <div class="flex justify-between py-2 px-3 bg-orange-50 rounded-xl">
-                        <span class="text-sm text-gray-600">Annual PIT</span>
-                        <span class="text-sm font-semibold text-orange-600">-${formatNumber(annualPIT)} LAK</span>
+                    <div class="flex justify-between py-1.5 px-2 bg-orange-50 rounded-lg">
+                        <span class="text-xs text-gray-600">Annual PIT</span>
+                        <span class="text-xs font-semibold text-orange-600">-${formatCurrency(annualPIT, 'LAK')}</span>
                     </div>
-                    <div class="flex justify-between py-3 px-3 bg-gradient-to-r from-primary-50 to-primary-100 rounded-xl">
-                        <span class="text-sm font-bold text-gray-900">Annual Net</span>
-                        <span class="text-sm font-bold text-primary-600">${formatNumber(annualNet)} LAK</span>
+                    <div class="flex justify-between py-2 px-2 bg-gradient-to-r from-primary-50 to-primary-100 rounded-lg">
+                        <span class="text-xs font-bold text-gray-900">Annual Net</span>
+                        <span class="text-xs font-bold text-primary-600">${formatCurrency(annualNet, 'LAK')}</span>
                     </div>
                 </div>
             `;
@@ -1511,9 +1773,9 @@
             
             const comparisonResults = document.getElementById('comparisonResults');
             comparisonResults.innerHTML = `
-                <div class="mt-4 p-4 bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl">
-                    <p class="text-sm font-semibold text-primary-800">Net Difference: ${formatNumber(difference)} LAK</p>
-                    <p class="text-sm ${calc2.net > calc1.net ? 'text-green-600' : 'text-red-600'} mt-1">
+                <div class="mt-3 p-2.5 bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg">
+                    <p class="text-xs font-semibold text-primary-800">Net Difference: ${formatCurrency(difference, 'LAK')}</p>
+                    <p class="text-xs ${calc2.net > calc1.net ? 'text-green-600' : 'text-red-600'} mt-0.5">
                         Salary ${higher} is higher by ${percentage}%
                     </p>
                 </div>
@@ -1556,12 +1818,12 @@
                 ['Other Allowances', calculationData.allowances.other],
                 ['Total Allowances', calculationData.allowances.total],
                 [''],
-                ['RESULTS (LAK)'],
+                ['RESULTS (ກີບ)'],
                 ['Gross Salary', calculationData.totalGrossLAK],
                 ['LSSO Deduction', calculationData.lssoAmount],
                 ['Taxable Income', calculationData.taxableIncome],
                 ['PIT Tax', calculationData.pitAmount],
-                ['Net Salary (LAK)', calculationData.netLAK],
+                ['Net Salary (ກີບ)', calculationData.netLAK],
                 ['Net Salary (USD)', calculationData.netUSD.toFixed(2)],
                 ['Effective Rate', calculationData.effectiveRate.toFixed(2) + '%']
             ];
@@ -1636,8 +1898,8 @@
                 div.className = 'p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer';
                 div.onclick = () => loadCalculation(index);
                 div.innerHTML = `
-                    <p class="text-sm font-semibold text-gray-900">${calc.date}</p>
-                    <p class="text-xs text-gray-500">${calc.inputCurrency} ${calc.inputAmount} → ${formatNumber(calc.netLAK)} LAK</p>
+                    <p class="text-xs sm:text-sm font-semibold text-gray-900">${calc.date}</p>
+                    <p class="text-xs text-gray-500">${calc.inputCurrency} ${calc.inputAmount} → ${calc.inputCurrency === 'USD' ? '$' + calc.netUSD.toFixed(2) + ' USD' : formatCurrency(calc.netLAK, 'LAK')}</p>
                 `;
                 savedDiv.appendChild(div);
             });
