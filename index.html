@@ -1316,6 +1316,7 @@
         let currentLanguage = 'lo';
         let includeLSSO = true;
         let allowanceSameCurrencyAsSalary = true; // ตัวแปรสำหรับเก็บสถานะว่า allowance ใช้สกุลเงินเดียวกับ salary หรือไม่
+        let hasUserInteracted = false; // Flag เพื่อติดตามว่า user เคย interact หรือยัง (สำหรับ vibrate)
 
         // ตรวจสอบว่า script ถูกโหลดแล้ว
         console.log('Script loaded successfully');
@@ -1505,7 +1506,8 @@ lo: {
                     toggleCurrencyInput(); // อัปเดต UI ให้ตรงกับ LAK
                 }
                 
-                setSocialSecurity(true);
+                // เรียกใช้ฟังก์ชัน initialization โดยข้าม vibrate (ยังไม่มี user interaction)
+                setSocialSecurity(true, true); // skipVibrate = true
                 initializeAllowanceCurrency(); // เริ่มต้นการตั้งค่า allowance currency
                 updateLanguage();
                 updateTotalAllowances();
@@ -1573,6 +1575,21 @@ lo: {
                 if (exchangeRateInput) {
                     exchangeRateInput.addEventListener('input', updateTotalAllowances);
                 }
+                
+                // เพิ่ม event listeners เพื่อติดตาม user interaction สำหรับ vibrate
+                // เมื่อ user interact ครั้งแรก ให้ set flag เพื่อให้ vibrate ทำงานได้
+                const userInteractionEvents = ['click', 'touchstart', 'keydown', 'mousedown'];
+                const markUserInteracted = function() {
+                    hasUserInteracted = true;
+                    // ลบ event listeners หลังจาก set flag แล้ว (ไม่ต้องติดตามต่อ)
+                    userInteractionEvents.forEach(eventType => {
+                        document.removeEventListener(eventType, markUserInteracted);
+                    });
+                };
+                
+                userInteractionEvents.forEach(eventType => {
+                    document.addEventListener(eventType, markUserInteracted, { once: true, passive: true });
+                });
             } catch (error) {
                 console.error('Error initializing page:', error);
             }
@@ -1583,9 +1600,7 @@ lo: {
             currentLanguage = currentLanguage === 'en' ? 'lo' : 'en';
             updateLanguage();
             
-            if (navigator.vibrate) {
-                navigator.vibrate(10);
-            }
+            safeVibrate(10);
         }
 
         // Update all translations
@@ -1688,8 +1703,25 @@ lo: {
             updateQuickDisplays();
         }
 
+        // Helper function สำหรับ vibrate ที่ปลอดภัย - จัดการ error ที่เกิดจาก browser policy
+        function safeVibrate(pattern) {
+            // ตรวจสอบว่า user เคย interact หรือยัง - browser ต้องการ user interaction ก่อนเรียก vibrate
+            if (!hasUserInteracted) {
+                return; // ไม่เรียก vibrate ถ้ายังไม่มี user interaction
+            }
+            
+            try {
+                if (navigator.vibrate && typeof navigator.vibrate === 'function') {
+                    navigator.vibrate(pattern);
+                }
+            } catch (e) {
+                // Browser block vibrate - ไม่ต้องแสดง error
+                // นี่เป็นพฤติกรรมปกติของ browser security policy
+            }
+        }
+
         // Set social security option
-        function setSocialSecurity(value) {
+        function setSocialSecurity(value, skipVibrate = false) {
             includeLSSO = value;
             
             const yesBtn = document.getElementById('ssoYes');
@@ -1707,13 +1739,14 @@ lo: {
                 noBtn.classList.add('active');
             }
             
-            if (navigator.vibrate) {
-                navigator.vibrate(5);
+            // ใช้ safeVibrate แทน navigator.vibrate โดยตรง - ข้าม vibrate ถ้าเป็น initialization
+            if (!skipVibrate) {
+                safeVibrate(5);
             }
         }
 
         // Toggle allowance currency option - ใช้กับ toggle switch ใหม่
-        function toggleAllowanceCurrency(checked) {
+        function toggleAllowanceCurrency(checked, skipVibrate = false) {
             allowanceSameCurrencyAsSalary = checked;
             
             const toggle = document.getElementById('allowanceCurrencyToggle');
@@ -1743,14 +1776,14 @@ lo: {
             updateAllowanceCurrencyDisplay();
             updateTotalAllowances();
             
-            // เพิ่ม haptic feedback (ถ้ารองรับ)
-            if (navigator.vibrate) {
-                navigator.vibrate(10);
+            // เพิ่ม haptic feedback (ถ้ารองรับ) - ข้าม vibrate ถ้าเป็น initialization
+            if (!skipVibrate) {
+                safeVibrate(10);
             }
         }
         
         // Set allowance currency option - ฟังก์ชันสำหรับตั้งค่าว่า allowance ใช้สกุลเงินเดียวกับ salary หรือไม่ (รองรับทั้ง toggle switch และปุ่มเก่า)
-        function setAllowanceCurrencyOption(sameAsSalary) {
+        function setAllowanceCurrencyOption(sameAsSalary, skipVibrate = false) {
             allowanceSameCurrencyAsSalary = sameAsSalary;
             
             // ตรวจสอบว่ามี toggle switch หรือไม่
@@ -1758,7 +1791,7 @@ lo: {
             if (toggle) {
                 // ใช้ toggle switch ใหม่
                 toggle.checked = sameAsSalary;
-                toggleAllowanceCurrency(sameAsSalary);
+                toggleAllowanceCurrency(sameAsSalary, skipVibrate);
             } else {
                 // Fallback สำหรับโครงสร้างเก่า (ถ้ายังมีปุ่ม)
                 const sameBtn = document.getElementById('allowanceCurrencySame');
@@ -1783,14 +1816,15 @@ lo: {
             updateAllowanceCurrencyDisplay();
             updateTotalAllowances();
             
-            if (navigator.vibrate) {
-                navigator.vibrate(5);
+            // ข้าม vibrate ถ้าเป็น initialization
+            if (!skipVibrate) {
+                safeVibrate(5);
             }
         }
         
         // Initialize allowance currency option on page load
         function initializeAllowanceCurrency() {
-            setAllowanceCurrencyOption(true); // ตั้งค่าเริ่มต้นเป็นใช้สกุลเงินเดียวกับ salary
+            setAllowanceCurrencyOption(true, true); // ตั้งค่าเริ่มต้นเป็นใช้สกุลเงินเดียวกับ salary, skipVibrate = true
         }
 
         // Update allowance currency display - อัปเดตการแสดงผลสกุลเงินของ allowance inputs
@@ -2075,9 +2109,7 @@ lo: {
             results.classList.remove('hidden');
             results.scrollIntoView({ behavior: 'smooth', block: 'start' });
             
-            if (navigator.vibrate) {
-                navigator.vibrate([10, 20, 10]);
-            }
+            safeVibrate([10, 20, 10]);
             } catch (error) {
                 console.error('Error in calculateSalary:', error);
                 alert(currentLanguage === 'en' ? 'An error occurred during calculation. Please check the console for details.' : 'เกิดข้อผิดพลาดในการคำนวณ กรุณาตรวจสอบ console สำหรับรายละเอียด');
@@ -2165,9 +2197,7 @@ lo: {
         function scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             
-            if (navigator.vibrate) {
-                navigator.vibrate(5);
-            }
+            safeVibrate(5);
         }
 
         // Show more options
@@ -2175,9 +2205,7 @@ lo: {
             document.getElementById('bottomSheetOverlay').classList.add('active');
             document.getElementById('moreOptionsSheet').classList.add('active');
             
-            if (navigator.vibrate) {
-                navigator.vibrate(5);
-            }
+            safeVibrate(5);
         }
 
         // Close all modals
@@ -2236,9 +2264,7 @@ lo: {
             document.getElementById('annualSummary').classList.remove('hidden');
             document.getElementById('comparisonTool').classList.add('hidden');
             
-            if (navigator.vibrate) {
-                navigator.vibrate(10);
-            }
+            safeVibrate(10);
         }
 
         // Compare salaries
@@ -2253,9 +2279,7 @@ lo: {
                 comparisonTool.classList.add('hidden');
             }
             
-            if (navigator.vibrate) {
-                navigator.vibrate(10);
-            }
+            safeVibrate(10);
         }
 
         // Run comparison
@@ -2350,9 +2374,7 @@ lo: {
             
             XLSX.writeFile(wb, filename);
             
-            if (navigator.vibrate) {
-                navigator.vibrate(20);
-            }
+            safeVibrate(20);
         }
 
         // Show toast notification
@@ -2390,9 +2412,7 @@ lo: {
             localStorage.setItem('laoSalaryCalculations', JSON.stringify(savedCalculations));
             showToast(currentLanguage === 'en' ? 'Saved!' : 'บันทึกแล้ว!');
             
-            if (navigator.vibrate) {
-                navigator.vibrate(30);
-            }
+            safeVibrate(30);
         }
 
         // Load saved calculations
@@ -2421,9 +2441,7 @@ lo: {
             document.getElementById('savedModalOverlay').classList.add('active');
             document.getElementById('savedModal').classList.add('active');
             
-            if (navigator.vibrate) {
-                navigator.vibrate(10);
-            }
+            safeVibrate(10);
         }
 
         // Close saved modal
@@ -2464,9 +2482,7 @@ lo: {
             toggleCurrencyInput();
             calculateSalary();
             
-            if (navigator.vibrate) {
-                navigator.vibrate(20);
-            }
+            safeVibrate(20);
         }
 
     </script>
