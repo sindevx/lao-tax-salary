@@ -10,11 +10,26 @@
     <meta name="theme-color" content="#4caf50">
     <meta name="description" content="Lao PDR Salary Tax Calculator - Calculate LSSO, PIT, and Net Salary">
     <title>Lao PDR Salary Tax Calculator</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Lao:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Preconnect to CDN for faster loading -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    
+    <!-- Load fonts with fallback - ใช้ font-display: swap เพื่อไม่ให้บล็อกการโหลดหน้าเว็บ -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Lao:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Lao:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
+    
+    <!-- Load Tailwind CSS first (needed for config) -->
+    <script src="https://cdn.tailwindcss.com" onerror="handleScriptError('tailwind')"></script>
+    
+    <!-- Tailwind Config - ต้องอยู่หลัง Tailwind script -->
     <script>
-        tailwind.config = {
+        // ตรวจสอบว่า Tailwind โหลดสำเร็จก่อนตั้งค่า config
+        if (typeof tailwind !== 'undefined') {
+            tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
@@ -60,10 +75,106 @@
                         },
                     },
                 }
-            }
+            };
+        } else {
+            console.warn('Tailwind CSS not loaded, config will be set when available');
+            // Retry setting config after a delay
+            setTimeout(function() {
+                if (typeof tailwind !== 'undefined') {
+                    tailwind.config = {
+                        theme: {
+                            extend: {
+                                fontFamily: {
+                                    sans: ['Inter', 'system-ui', 'sans-serif'],
+                                    lao: ['Noto Sans Lao', 'Inter', 'system-ui', 'sans-serif'],
+                                },
+                                colors: {
+                                    primary: {
+                                        50: '#e8f5e9',
+                                        100: '#c8e6c9',
+                                        200: '#a5d6a7',
+                                        300: '#81c784',
+                                        400: '#66bb6a',
+                                        500: '#4caf50',
+                                        600: '#43a047',
+                                        700: '#388e3c',
+                                        800: '#2e7d32',
+                                        900: '#1b5e20',
+                                    }
+                                },
+                                animation: {
+                                    'slide-up': 'slideUp 0.3s ease-out',
+                                    'slide-down': 'slideDown 0.3s ease-out',
+                                    'fade-in': 'fadeIn 0.3s ease-out',
+                                    'pulse-soft': 'pulseSoft 2s infinite',
+                                },
+                                keyframes: {
+                                    slideUp: {
+                                        '0%': { transform: 'translateY(20px)', opacity: '0' },
+                                        '100%': { transform: 'translateY(0)', opacity: '1' },
+                                    },
+                                    slideDown: {
+                                        '0%': { transform: 'translateY(-20px)', opacity: '0' },
+                                        '100%': { transform: 'translateY(0)', opacity: '1' },
+                                    },
+                                    fadeIn: {
+                                        '0%': { opacity: '0' },
+                                        '100%': { opacity: '1' },
+                                    },
+                                    pulseSoft: {
+                                        '0%, 100%': { opacity: '1' },
+                                        '50%': { opacity: '0.7' },
+                                    },
+                                },
+                            }
+                        }
+                    };
+                }
+            }, 100);
         }
     </script>
+    
+    <!-- Load xlsx library with defer (not critical for initial render) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer onerror="handleScriptError('xlsx')"></script>
+    
+    <!-- Error handler for failed scripts -->
+    <script>
+        // ฟังก์ชันจัดการ error เมื่อ script โหลดไม่สำเร็จ
+        function handleScriptError(scriptName) {
+            console.warn('Script failed to load: ' + scriptName);
+            // แสดงข้อความเตือนแต่ไม่บล็อกการทำงานของหน้าเว็บ
+            if (scriptName === 'tailwind') {
+                console.warn('Tailwind CSS failed to load, page may not display correctly');
+            } else if (scriptName === 'xlsx') {
+                console.warn('XLSX library failed to load, export feature may not work');
+            }
+        }
+        
+        // ตรวจสอบว่า scripts โหลดสำเร็จหรือไม่
+        window.addEventListener('error', function(e) {
+            if (e.target && e.target.tagName === 'SCRIPT') {
+                console.error('Script loading error:', e.target.src || e.target.href);
+                // ไม่บล็อกการทำงานของหน้าเว็บ
+            }
+        }, true);
+        
+        // ตรวจสอบ network errors
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('Unhandled promise rejection:', e.reason);
+        });
+    </script>
     <style>
+        /* Critical CSS - แสดงผลได้แม้ว่า Tailwind จะโหลดไม่สำเร็จ */
+        html, body {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        *, *::before, *::after {
+            box-sizing: inherit;
+        }
+        
         /* ป้องกันการ highlight และ callout แต่ยังให้ input ทำงานได้ */
         * {
             -webkit-tap-highlight-color: transparent;
@@ -405,6 +516,47 @@
             transition: all 0.2s ease;
         }
         
+        /* Loading Indicator - แสดงขณะโหลดหน้าเว็บ */
+        #pageLoader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        #pageLoader.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #4caf50;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loader-text {
+            margin-top: 1rem;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+        
         /* Mobile Touch Improvements - ปรับปรุงการทำงานบน mobile */
         button, a, .btn-primary, .toggle-option, .section-card {
             /* เปิดใช้งาน touch events */
@@ -667,6 +819,12 @@
     </style>
 </head>
 <body>
+    <!-- Loading Indicator - แสดงขณะโหลดหน้าเว็บ -->
+    <div id="pageLoader">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">Loading...</div>
+    </div>
+    
     <!-- App Header -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
         <div class="px-4 py-3">
@@ -1556,6 +1714,20 @@ lo: {
             }
         };
 
+        // ฟังก์ชันซ่อน loading indicator
+        function hideLoader() {
+            const loader = document.getElementById('pageLoader');
+            if (loader) {
+                loader.classList.add('hidden');
+                // ลบ loader ออกจาก DOM หลังจาก animation เสร็จ
+                setTimeout(function() {
+                    if (loader.parentNode) {
+                        loader.parentNode.removeChild(loader);
+                    }
+                }, 300);
+            }
+        }
+        
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             try {
@@ -1571,6 +1743,15 @@ lo: {
                 initializeAllowanceCurrency(); // เริ่มต้นการตั้งค่า allowance currency
                 updateLanguage();
                 updateTotalAllowances();
+                
+                // ซ่อน loading indicator หลังจาก initialization เสร็จ
+                // ใช้ setTimeout เพื่อให้แน่ใจว่า DOM พร้อมแล้ว
+                setTimeout(hideLoader, 100);
+                
+                // Fallback: ซ่อน loader หลังจาก 3 วินาทีแม้ว่าจะมี error
+                setTimeout(function() {
+                    hideLoader();
+                }, 3000);
                 
                 // Add event listeners for live updates
                 const allowanceInputs = ['overtime', 'otherAllowances'];
@@ -1685,8 +1866,21 @@ lo: {
                 });
             } catch (error) {
                 console.error('Error initializing page:', error);
+                // ซ่อน loader แม้ว่าจะมี error
+                hideLoader();
             }
         });
+        
+        // Fallback: ใช้ window.onload เป็น backup
+        window.addEventListener('load', function() {
+            // ซ่อน loader เมื่อทุกอย่างโหลดเสร็จ
+            setTimeout(hideLoader, 500);
+        });
+        
+        // Emergency fallback: ซ่อน loader หลังจาก 5 วินาทีไม่ว่าจะเกิดอะไรขึ้น
+        setTimeout(function() {
+            hideLoader();
+        }, 5000);
 
         // Language toggle
         function toggleLanguage() {
