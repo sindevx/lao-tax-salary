@@ -1,0 +1,40 @@
+# Netlify Configuration for Lao Salary Tax Calculator
+# รองรับการ deploy บน Netlify และ mobile access
+
+[build]
+  # ไม่ต้อง build เพราะเป็น single HTML file
+  publish = "."
+  command = "echo 'Single HTML file - no build needed'"
+
+# Redirects และ rewrites สำหรับ SPA
+# ใช้สำหรับ redirect ทุก path ไปที่ index.html (ยกเว้นไฟล์ที่มีอยู่จริง)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false
+  # force = false หมายความว่าจะไม่ redirect ถ้ามีไฟล์จริงอยู่ (เช่น manifest.json)
+
+# Headers สำหรับ manifest.json
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Content-Type = "application/manifest+json"
+    Cache-Control = "public, max-age=3600"
+
+# Headers สำหรับ security และ mobile optimization
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # Cache control สำหรับ HTML
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Headers สำหรับ mobile PWA support
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
