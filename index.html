@@ -12,6 +12,8 @@
     <meta name="theme-color" content="#4caf50">
     <meta name="msapplication-TileColor" content="#4caf50">
     <meta name="description" content="Lao PDR Salary Tax Calculator - Calculate LSSO, PIT, and Net Salary">
+    <!-- Security & Mobile Optimization: CSP ที่อนุญาต CDN ที่จำเป็นและไม่บล็อก mobile -->
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests; default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https:; img-src 'self' data: https:; frame-ancestors 'none';">
     <title>Lao PDR Salary Tax Calculator</title>
     <!-- Preconnect to CDN for faster loading -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
@@ -165,6 +167,31 @@
         // ตรวจสอบ network errors
         window.addEventListener('unhandledrejection', function(e) {
             console.error('Unhandled promise rejection:', e.reason);
+        });
+        
+        // Mobile network error handling: ตรวจสอบว่า CDN โหลดสำเร็จหรือไม่
+        window.addEventListener('error', function(e) {
+            // ถ้าเป็น network error จาก CDN (โดยเฉพาะบน mobile ที่ช้า/ไม่เสถียร)
+            if (e.target && (e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK')) {
+                const src = e.target.src || e.target.href || '';
+                if (src.includes('cdn.tailwindcss.com') || src.includes('cdnjs.cloudflare.com') || src.includes('fonts.googleapis.com')) {
+                    console.warn('CDN resource failed to load on mobile:', src);
+                    // ไม่บล็อกการทำงาน - ใช้ fallback ที่มีอยู่แล้ว
+                }
+            }
+        }, true);
+        
+        // ตรวจสอบว่า page โหลดสำเร็จบน mobile (ป้องกัน infinite loading)
+        let pageLoadTimeout = setTimeout(function() {
+            const loader = document.getElementById('pageLoader');
+            if (loader && !loader.classList.contains('hidden')) {
+                console.warn('Page load timeout - forcing loader hide');
+                hideLoader();
+            }
+        }, 10000); // 10 วินาที timeout สำหรับ mobile ที่ช้า
+        
+        window.addEventListener('load', function() {
+            clearTimeout(pageLoadTimeout);
         });
     </script>
     <style>
