@@ -634,6 +634,7 @@
             /* iOS specific fixes */
             input, textarea, select {
                 -webkit-appearance: none;
+                appearance: none; /* เพิ่ม standard property เพื่อความเข้ากันได้ */
                 border-radius: 0.5rem;
             }
         }
@@ -1614,6 +1615,30 @@
         let allowanceSameCurrencyAsSalary = true; // ตัวแปรสำหรับเก็บสถานะว่า allowance ใช้สกุลเงินเดียวกับ salary หรือไม่
         let hasUserInteracted = false; // Flag เพื่อติดตามว่า user เคย interact หรือยัง (สำหรับ vibrate)
 
+        // Storage helpers (production note): iOS/Private mode อาจ throw ตอนใช้ localStorage
+        const STORAGE_KEY_SAVED_CALCS = 'laoSalaryCalculations';
+        function safeJsonParse(raw, fallback) {
+            try { return JSON.parse(raw); } catch { return fallback; }
+        }
+        function safeLocalStorageGet(key, fallback) {
+            try {
+                const v = localStorage.getItem(key);
+                return v === null ? fallback : v;
+            } catch (e) {
+                console.warn('localStorage.getItem failed:', e);
+                return fallback;
+            }
+        }
+        function safeLocalStorageSet(key, value) {
+            try {
+                localStorage.setItem(key, value);
+                return true;
+            } catch (e) {
+                console.warn('localStorage.setItem failed:', e);
+                return false;
+            }
+        }
+
         // ตรวจสอบว่า script ถูกโหลดแล้ว
         console.log('Script loaded successfully');
         
@@ -1981,7 +2006,7 @@ lo: {
                 updateTotalAllowances();
                 
                 // ตรวจสอบและเพิ่ม class ให้กับ element ที่มีข้อความภาษาลาว - เพื่อให้ใช้ Noto Sans Lao เสมอ
-                setTimeout(ensureLaoTextFont, 150);
+                setTimeout(scheduleEnsureLaoTextFont, 150);
                 
                 // ซ่อน loading indicator หลังจาก initialization เสร็จ
                 // ใช้ setTimeout เพื่อให้แน่ใจว่า DOM พร้อมแล้ว
@@ -2125,20 +2150,34 @@ lo: {
         }
 
         // ฟังก์ชันสำหรับเพิ่ม class ให้กับ element ที่มีข้อความภาษาลาว - เพื่อให้ใช้ Noto Sans Lao เสมอ
+        let _ensureLaoFontScheduled = false;
+        function scheduleEnsureLaoTextFont() {
+            // กันการรันถี่/ซ้ำ (สำคัญสำหรับ mobile ที่ช้า)
+            if (_ensureLaoFontScheduled) return;
+            _ensureLaoFontScheduled = true;
+            
+            const run = () => {
+                _ensureLaoFontScheduled = false;
+                try { ensureLaoTextFont(); } catch (e) { console.error('ensureLaoTextFont error:', e); }
+            };
+            
+            // ใช้ idle time ถ้ามี เพื่อลดอาการกระตุกบนมือถือ
+            if (typeof requestIdleCallback === 'function') {
+                requestIdleCallback(run, { timeout: 500 });
+            } else {
+                setTimeout(run, 50);
+            }
+        }
+
         function ensureLaoTextFont() {
-            // หา element ทั้งหมดที่มีข้อความ ກີບ หรือข้อความภาษาลาว
-            const allElements = document.querySelectorAll('*');
-            allElements.forEach(el => {
-                // ข้าม element ที่ไม่มี text content
-                if (!el.textContent) return;
-                
-                // ตรวจสอบว่ามีข้อความภาษาลาว (ກີບ หรือตัวอักษรลาวอื่นๆ)
-                const hasLaoText = /[\u0E80-\u0EFF]/.test(el.textContent);
-                
-                if (hasLaoText) {
-                    // เพิ่ม class lao-currency-text หรือ class อื่นที่กำหนดให้ใช้ Noto Sans Lao
-                    el.classList.add('lao-currency-text');
-                }
+            // NOTE: เดิมสแกน `*` ทั้งหน้า (หนักมากบน mobile)
+            // ปรับเป็นสแกนเฉพาะ element ที่มีโอกาสมีข้อความลาว/สกุลเงิน และเปลี่ยนตาม runtime
+            const candidates = document.querySelectorAll(
+                '[data-i18n], .number-display, [id*="Display"], [id*="Highlight"], [id*="Currency"], .currency-badge'
+            );
+            candidates.forEach(el => {
+                const text = el.textContent || '';
+                if (/[\u0E80-\u0EFF]/.test(text)) el.classList.add('lao-currency-text');
             });
             
             // เพิ่ม class ให้กับ element ที่แสดงสกุลเงิน ກີບ โดยเฉพาะ
@@ -2202,7 +2241,7 @@ lo: {
             
             // ตรวจสอบและเพิ่ม class ให้กับ element ที่มีข้อความภาษาลาว - เพื่อให้ใช้ Noto Sans Lao เสมอ
             // ใช้ setTimeout เพื่อให้ DOM อัปเดตเสร็จก่อน
-            setTimeout(ensureLaoTextFont, 50);
+            scheduleEnsureLaoTextFont();
         }
 
         // Update quick displays
@@ -2741,7 +2780,7 @@ lo: {
             safeSetText('netSalaryUSDDisplay', '$' + data.netUSD.toFixed(2) + ' USD');
             
             // ตรวจสอบและเพิ่ม class ให้กับ element ที่มีข้อความภาษาลาว - เพื่อให้ใช้ Noto Sans Lao เสมอ
-            setTimeout(ensureLaoTextFont, 50);
+            scheduleEnsureLaoTextFont();
             
             // Tax brackets - ตรวจสอบว่ามี element หรือไม่
             const taxBracketDetails = document.getElementById('taxBracketDetails');
@@ -3017,7 +3056,7 @@ lo: {
                 return;
             }
             
-            const savedCalculations = JSON.parse(localStorage.getItem('laoSalaryCalculations') || '[]');
+            const savedCalculations = safeJsonParse(safeLocalStorageGet(STORAGE_KEY_SAVED_CALCS, '[]'), []);
             const calculation = {
                 id: Date.now(),
                 date: new Date().toLocaleDateString(),
@@ -3029,8 +3068,18 @@ lo: {
                 savedCalculations.pop();
             }
             
-            localStorage.setItem('laoSalaryCalculations', JSON.stringify(savedCalculations));
-            showToast(currentLanguage === 'en' ? 'Saved!' : 'บันทึกแล้ว!');
+            const ok = safeLocalStorageSet(STORAGE_KEY_SAVED_CALCS, JSON.stringify(savedCalculations));
+            if (ok) {
+                showToast(currentLanguage === 'en' ? 'Saved!' : 'บันทึกแล้ว!');
+            } else {
+                // robust: บาง browser (โดยเฉพาะ iOS Private) ไม่อนุญาตให้เขียน storage
+                showValidationModal(
+                    t.validationError,
+                    currentLanguage === 'en'
+                        ? 'Cannot save on this browser mode. Disable private mode or allow site storage.'
+                        : 'ไม่สามารถบันทึกได้ในโหมด/บราวเซอร์นี้ (เช่น iOS Private) ให้ปิด Private Mode หรืออนุญาตการเก็บข้อมูลของเว็บไซต์'
+                );
+            }
             
             safeVibrate(30);
         }
@@ -3038,7 +3087,7 @@ lo: {
         // Load saved calculations
         function loadSavedCalculations() {
             const t = translations[currentLanguage];
-            const savedCalculations = JSON.parse(localStorage.getItem('laoSalaryCalculations') || '[]');
+            const savedCalculations = safeJsonParse(safeLocalStorageGet(STORAGE_KEY_SAVED_CALCS, '[]'), []);
             
             if (savedCalculations.length === 0) {
                 showValidationModal(t.validationError, t.validationNoSavedCalculations);
@@ -3073,7 +3122,7 @@ lo: {
 
         // Load specific calculation
         function loadCalculation(index) {
-            const savedCalculations = JSON.parse(localStorage.getItem('laoSalaryCalculations') || '[]');
+            const savedCalculations = safeJsonParse(safeLocalStorageGet(STORAGE_KEY_SAVED_CALCS, '[]'), []);
             const calc = savedCalculations[index];
             
             document.getElementById('currencySelector').value = calc.inputCurrency;
