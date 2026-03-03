@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  web:
+    image: lao-salary-web:latest
+    ports:
+      - "5500:80" # เปิดเว็บผ่าน http://HOST:5500
+    deploy:
+      replicas: 1
