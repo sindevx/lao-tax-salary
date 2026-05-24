@@ -5,7 +5,7 @@ import streamlit.components.v1 as components
 st.set_page_config(
     page_title="Lao PDR Salary Tax Calculator",
     page_icon="🇱🇦",
-    layout="wide",
+    layout="centered",
     initial_sidebar_state="collapsed",
 )
 
@@ -16,7 +16,7 @@ st.markdown(
         header[data-testid="stHeader"],
         [data-testid="stToolbar"],
         footer { display: none !important; }
-        .block-container { padding: 0 !important; max-width: 100% !important; }
+        .block-container { padding: 0 !important; }
         #root > div:first-child { padding: 0 !important; }
     </style>
     """,
@@ -34,7 +34,25 @@ html = html.replace(
     f"<style>\n{css}\n</style>",
 )
 
-# ── Patch 2: inject iframe compatibility fixes before any app script runs ──────
+# ── Patch 2: iframe CSS overrides injected into <head> ───────────────────────
+#
+#  a) Results modal: env(safe-area-inset-top) = 0 on desktop inside an iframe,
+#     so the original padding-top of calc(0 + 0.75rem) = 12 px is far too tight.
+#     Override to 1.5 rem top / 1.5 rem bottom for comfortable breathing room.
+#
+#  b) Bottom nav bar: position:fixed inside the iframe sits at the very bottom
+#     of the 1100 px iframe, not the browser window — keep it visible.
+#
+CSS_PATCH = """<style>
+/* ── Streamlit iframe overrides ── */
+#results:not(.hidden) {
+    padding: 1.5rem 1rem 1.5rem !important;
+}
+</style>
+"""
+html = html.replace("</head>", CSS_PATCH + "\n</head>", 1)
+
+# ── Patch 3 (was Patch 2): inject iframe compatibility fixes before any app script runs ──────
 #
 #  Problems in Streamlit's sandboxed iframe:
 #    a) history.replaceState → SecurityError (different origin/blob URL).
