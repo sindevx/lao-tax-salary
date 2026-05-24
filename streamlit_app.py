@@ -13,11 +13,29 @@ st.set_page_config(
 st.markdown(
     """
     <style>
+        /* Hide all Streamlit chrome */
         header[data-testid="stHeader"],
         [data-testid="stToolbar"],
         footer { display: none !important; }
-        .block-container { padding: 0 !important; }
+
+        /* Remove container padding/margin */
+        .block-container { padding: 0 !important; margin: 0 !important; }
         #root > div:first-child { padding: 0 !important; }
+
+        /* Match app background so no Streamlit gray shows around the iframe */
+        .stApp,
+        [data-testid="stAppViewContainer"],
+        [data-testid="stMain"],
+        section[data-testid="stMain"],
+        .main,
+        body { background-color: #f8fafc !important; }
+
+        /* Make the iframe fill its wrapper with no gap */
+        [data-testid="stHtml"] > div { line-height: 0; }
+        [data-testid="stHtml"] iframe {
+            display: block !important;
+            width: 100% !important;
+        }
     </style>
     """,
     unsafe_allow_html=True,
