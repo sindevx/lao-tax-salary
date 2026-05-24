@@ -151,7 +151,22 @@ FEATURE_PATCH = """<script>
             };
         }
 
-        // ── Fix B: visually highlight exchange-rate fetch failures ──────────
+        // ── Fix C: scroll parent Streamlit page to top when results open ────
+        // The results modal uses position:fixed; inset:0 inside the iframe, so
+        // it covers the full iframe height. But the user typically scrolled
+        // the Streamlit page DOWN to reach the form — leaving the browser
+        // viewport showing the bottom half of the iframe. The modal header and
+        // close button are at the top of the iframe, now out of view.
+        // Scrolling the parent page to top after Calculate brings them back.
+        if (typeof calculateSalary === 'function') {
+            var _origCalc = calculateSalary;
+            window.calculateSalary = function () {
+                _origCalc.apply(this, arguments);
+                try { window.parent.scrollTo({ top: 0, behavior: 'smooth' }); } catch (_) {}
+            };
+        }
+
+        // ── Fix D: visually highlight exchange-rate fetch failures ──────────
         if (typeof setExchangeRateStatus === 'function') {
             var _origStatus = setExchangeRateStatus;
             window.setExchangeRateStatus = function (messageKey) {
