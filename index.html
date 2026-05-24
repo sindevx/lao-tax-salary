@@ -94,6 +94,11 @@
             user-select: none;
         }
         
+        /* Scale to 80% on desktop — matches preferred browser zoom level */
+        @media (min-width: 640px) {
+            html { zoom: 0.8; }
+        }
+
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             overscroll-behavior-y: none;

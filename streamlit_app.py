@@ -45,6 +45,13 @@ html = html.replace(
 #
 CSS_PATCH = """<style>
 /* ── Streamlit iframe overrides ── */
+
+/* Match the 80% desktop zoom applied in index.html */
+@media (min-width: 640px) {
+    html { zoom: 0.8; }
+}
+
+/* Results modal: restore comfortable padding (env(safe-area-inset-top) = 0 in iframes) */
 #results:not(.hidden) {
     padding: 1.5rem 1rem 1.5rem !important;
 }
