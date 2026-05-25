@@ -5,7 +5,7 @@ set -e  # ถ้ามี error ให้หยุดทันที
 # ถ้าไม่ตั้ง env ไว้ จะใช้ค่า default เหล่านี้
 REGISTRY="${REGISTRY:-66.42.61.60:5000}"
 IMAGE_REPO="${IMAGE_REPO:-lao_salary}"
-IMAGE_TAG="${IMAGE_TAG:-1.0.0}"
+IMAGE_TAG="${IMAGE_TAG:-1.0.1}"
 
 IMAGE_NAME="${REGISTRY}/${IMAGE_REPO}:${IMAGE_TAG}"
 
